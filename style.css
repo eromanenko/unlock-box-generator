@@ -861,6 +861,28 @@ p.tip {
     word-break: break-all;
 }
 
+/* FLAP STYLES */
+.flap-text {
+    position: absolute;
+    width: 95%;
+    top: 50%;
+    left: 50%;
+    font-family: 'Roboto Slab', serif;
+    font-size: 3.5mm;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    line-height: 1.1;
+}
+
+.top-flap-text {
+    transform: translate(-50%, -50%) rotate(180deg);
+}
+
+.bot-flap-text {
+    transform: translate(-50%, -50%) rotate(0deg);
+}
+
 /* SPINE STYLES */
 .spine-text {
     position: absolute;

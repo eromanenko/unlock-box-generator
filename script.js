@@ -55,12 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Spine locks (bottom-to-top logic matching rotation: [lock1, lock2, lock3])
-        // Rendered top-to-bottom in flex-col = index 2, 1, 0. If difficulty = 1, bottommost (index 0) is red.
+        // Rendered top-to-bottom in flex-col = index 2, 1, 0.
+        const activeColor = d === 1 ? '#4caf50' : (d === 2 ? '#ff9800' : '#e63946');
         const spineIndexes = [2, 1, 0];
         spineIndexes.forEach(index => {
             const isActive = index < d;
-            const colorSpine = isActive ? '#e63946' : '#fff'; // Active is red, inactive is white
-            htmlSpine += `<span style="color:${colorSpine}">${lockSpineSVG}</span>`;
+            const colorSpine = isActive ? activeColor : '#fff'; // Active color varies, inactive is white
+            const shadowColor = (isActive && d === 3) ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 0, 0, 1)';
+            const filterStyle = `filter: drop-shadow(0 0 1px ${shadowColor});`;
+            
+            htmlSpine += `<span style="color:${colorSpine}; ${filterStyle}">${lockSpineSVG}</span>`;
         });
 
         locksFront.innerHTML = htmlFront;

@@ -318,8 +318,11 @@ p.tip {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #fff;
-    z-index: -1;
+    background: #fff; /* Default to white for the right side */
+}
+
+#top-dust-1 .dust-bg, #bot-dust-1 .dust-bg {
+    background: var(--c-primary); /* Left spine flaps are blue */
 }
 
 #top-dust-1 {
@@ -787,19 +790,20 @@ p.tip {
     position: absolute;
     color: #000;
     transform-origin: center center;
-    white-space: nowrap;
-}
-
-.spine-text {
+    text-align: center;
+    line-height: 1.1;
     transform: rotate(-90deg);
 }
 
 .spine-bot {
     font-family: 'Roboto Slab', serif;
-    font-size: 4mm;
+    font-size: 3.5mm; /* slightly smaller to fit two lines better */
     font-weight: bold;
     color: #333;
-    top: 45%;
+    top: 50%;
+    left: 50%;
+    width: 65mm; /* Gives the text room to wrap within the available spine height */
+    transform: translate(-50%, -50%) rotate(-90deg); /* Re-centers correctly */
 }
 
 .spine-top-brand {
@@ -876,7 +880,6 @@ p.tip {
     display: flex;
     flex-direction: column;
     color: #fff;
-    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 1));
 }
 
 .spine-locks span {

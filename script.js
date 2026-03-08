@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlSpine += `<span style="color:${colorSpine}; ${filterStyle}">${lockSpineSVG}</span>`;
         });
 
-        locksFront.innerHTML = htmlFront;
+        if(locksFront) locksFront.innerHTML = htmlFront;
         if(locksSpineR) locksSpineR.innerHTML = htmlSpine;
         if(locksSpineL) locksSpineL.innerHTML = htmlSpine;
     }

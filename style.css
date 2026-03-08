@@ -4,9 +4,14 @@
     --depth-mm: 10.4mm;
     --w-front: 63.4mm;
     --h-main: 114.8mm;
-    --w-glue: 12mm;
+    --w-glue: 10mm;
     --flap: 15mm;
     --y-main: calc(var(--flap) + var(--depth-mm));
+
+    --shift-15: calc(var(--depth-mm) * 0.2679);
+    /* tan(15deg) */
+    --hyp-15: calc(var(--depth-mm) / 0.9659);
+    /* 1 / cos(15deg) */
 
     --bg-dark: #121212;
     --bg-panel: #1e1e1e;
@@ -194,7 +199,17 @@ p.tip {
     left: 0;
     width: var(--w-glue);
     height: var(--h-main);
+}
+
+#glue-flap .glue-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: white;
+    clip-path: polygon(0 2.68mm, 100% 0, 100% 100%, 0 calc(100% - 2.68mm));
+    z-index: -1;
 }
 
 #panel-front {
@@ -270,44 +285,102 @@ p.tip {
 }
 
 /* New Dust Flaps */
+#top-dust-1,
+#bot-dust-1,
+#top-dust-2,
+#bot-dust-2 {
+    width: var(--depth-mm);
+    height: var(--depth-mm);
+}
+
+.dust-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: -1;
+}
+
 #top-dust-1 {
     top: calc(var(--y-main) - var(--depth-mm));
     left: calc(var(--w-glue) + var(--w-front));
-    width: var(--depth-mm);
-    height: var(--depth-mm);
-    background: #fff;
 }
+
+#top-dust-1 .dust-bg {
+    clip-path: polygon(var(--shift-15) 0, calc(100% - var(--shift-15)) 0, 100% 100%, 0 100%);
+}
+
 #bot-dust-1 {
     top: calc(var(--y-main) + var(--h-main));
     left: calc(var(--w-glue) + var(--w-front));
-    width: var(--depth-mm);
-    height: var(--depth-mm);
-    background: #fff;
 }
+
+#bot-dust-1 .dust-bg {
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--shift-15)) 100%, var(--shift-15) 100%);
+}
+
 #top-dust-2 {
     top: calc(var(--y-main) - var(--depth-mm));
     left: calc(var(--w-glue) + var(--w-front) * 2 + var(--depth-mm));
-    width: var(--depth-mm);
-    height: var(--depth-mm);
-    background: #fff;
 }
+
+#top-dust-2 .dust-bg {
+    clip-path: polygon(var(--shift-15) 0, calc(100% - var(--shift-15)) 0, 100% 100%, 0 100%);
+}
+
 #bot-dust-2 {
     top: calc(var(--y-main) + var(--h-main));
     left: calc(var(--w-glue) + var(--w-front) * 2 + var(--depth-mm));
-    width: var(--depth-mm);
-    height: var(--depth-mm);
-    background: #fff;
+}
+
+#bot-dust-2 .dust-bg {
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--shift-15)) 100%, var(--shift-15) 100%);
 }
 
 /* =============== CSS DIELINE =============== */
 /* Cut = blue solid, Fold = red dashed */
 
 #print-wrapper:not(.dieline-hidden) #glue-flap {
-    border-top: 1px solid #1a237e;
-    border-bottom: 1px solid #1a237e;
-    border-left: 1px solid #1a237e;
     border-right: 1px dashed #d32f2f;
-    border-radius: 4mm 0 0 4mm;
+    border-left: none;
+    border-top: none;
+    border-bottom: none;
+    border-radius: 0;
+}
+
+#print-wrapper:not(.dieline-hidden) #glue-flap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10.35mm;
+    height: 1px;
+    background: #1a237e;
+    transform-origin: right top;
+    transform: rotate(-15deg);
+}
+
+#print-wrapper:not(.dieline-hidden) #glue-flap::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10.35mm;
+    height: 1px;
+    background: #1a237e;
+    transform-origin: right bottom;
+    transform: rotate(15deg);
+}
+
+#print-wrapper:not(.dieline-hidden) #glue-flap .glue-left-cut {
+    position: absolute;
+    left: 0;
+    top: 2.68mm;
+    bottom: 2.68mm;
+    width: 1px;
+    background: #1a237e;
 }
 
 #print-wrapper:not(.dieline-hidden) #panel-front {
@@ -338,6 +411,7 @@ p.tip {
     border-left: 1px solid #1a237e;
     border-right: 1px solid #1a237e;
 }
+
 #print-wrapper:not(.dieline-hidden) #top-tuck-flap {
     border-top: 1px solid #1a237e;
     border-left: 1px solid #1a237e;
@@ -351,6 +425,7 @@ p.tip {
     border-left: 1px solid #1a237e;
     border-right: 1px solid #1a237e;
 }
+
 #print-wrapper:not(.dieline-hidden) #bot-tuck-flap {
     border-bottom: 1px solid #1a237e;
     border-left: 1px solid #1a237e;
@@ -358,23 +433,95 @@ p.tip {
     border-radius: 0 0 4mm 4mm;
 }
 
-/* Dust Flaps */
+/* Dust Flaps Dieline */
 #print-wrapper:not(.dieline-hidden) #top-dust-1,
 #print-wrapper:not(.dieline-hidden) #top-dust-2 {
-    border-top: 1px solid #1a237e;
-    border-left: 1px solid #1a237e;
-    border-right: 1px solid #1a237e;
     border-bottom: 1px dashed #d32f2f;
-    border-radius: 3mm 3mm 0 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+}
+
+#print-wrapper:not(.dieline-hidden) #top-dust-1 .dust-cut,
+#print-wrapper:not(.dieline-hidden) #top-dust-2 .dust-cut {
+    position: absolute;
+    top: 0;
+    left: var(--shift-15);
+    right: var(--shift-15);
+    height: 1px;
+    background: #1a237e;
+}
+
+#print-wrapper:not(.dieline-hidden) #top-dust-1::before,
+#print-wrapper:not(.dieline-hidden) #top-dust-2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: var(--hyp-15);
+    background: #1a237e;
+    transform-origin: bottom left;
+    transform: rotate(15deg);
+}
+
+#print-wrapper:not(.dieline-hidden) #top-dust-1::after,
+#print-wrapper:not(.dieline-hidden) #top-dust-2::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    height: var(--hyp-15);
+    background: #1a237e;
+    transform-origin: bottom right;
+    transform: rotate(-15deg);
 }
 
 #print-wrapper:not(.dieline-hidden) #bot-dust-1,
 #print-wrapper:not(.dieline-hidden) #bot-dust-2 {
-    border-bottom: 1px solid #1a237e;
-    border-left: 1px solid #1a237e;
-    border-right: 1px solid #1a237e;
     border-top: 1px dashed #d32f2f;
-    border-radius: 0 0 3mm 3mm;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+}
+
+#print-wrapper:not(.dieline-hidden) #bot-dust-1 .dust-cut,
+#print-wrapper:not(.dieline-hidden) #bot-dust-2 .dust-cut {
+    position: absolute;
+    bottom: 0;
+    left: var(--shift-15);
+    right: var(--shift-15);
+    height: 1px;
+    background: #1a237e;
+}
+
+#print-wrapper:not(.dieline-hidden) #bot-dust-1::before,
+#print-wrapper:not(.dieline-hidden) #bot-dust-2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: var(--hyp-15);
+    background: #1a237e;
+    transform-origin: top left;
+    transform: rotate(-15deg);
+}
+
+#print-wrapper:not(.dieline-hidden) #bot-dust-1::after,
+#print-wrapper:not(.dieline-hidden) #bot-dust-2::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1px;
+    height: var(--hyp-15);
+    background: #1a237e;
+    transform-origin: top right;
+    transform: rotate(15deg);
 }
 
 /* OVERLAYS ON FRONT */

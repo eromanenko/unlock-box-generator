@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNLOCK! Box Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Condensed:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <aside class="sidebar noprint">
+        <h1>UNLOCK! Box Generator</h1>
+        <p class="subtitle">Create your custom adventure box</p>
+
+        <div class="control-group">
+            <label for="game-title">Game Title</label>
+            <input type="text" id="game-title" value="LE DONJON DE DOO-ARANN" />
+        </div>
+
+        <div class="control-group">
+            <label for="series-title">Series Name</label>
+            <input type="text" id="series-title" value="SHORT ADVENTURES" />
+        </div>
+
+        <div class="control-group">
+            <label for="difficulty">Difficulty Level (1-3)</label>
+            <select id="difficulty">
+                <option value="1">1 Lock</option>
+                <option value="2">2 Locks</option>
+                <option value="3" selected>3 Locks</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="box-depth">Box Depth (Thickness), mm</label>
+            <input type="number" id="box-depth" value="10.4" step="0.1" />
+            <small>Recommended: 10-15 mm depending on card count</small>
+        </div>
+
+        <div class="control-group">
+            <label for="solution-url">Solutions URL (QR Code)</label>
+            <input type="url" id="solution-url" value="https://www.spacecowboys-games.com/unlock-solutions/" />
+        </div>
+
+        <div class="control-group">
+            <label>Image (Front Panel)</label>
+            <input type="file" id="front-image" accept="image/*" />
+            <img class="thumbnail" id="front-thumb" style="display: none;" />
+        </div>
+
+        <div class="control-group">
+            <label>Image (Back Panel)</label>
+            <input type="file" id="back-image" accept="image/*" />
+            <img class="thumbnail" id="back-thumb" style="display: none;" />
+        </div>
+
+        <div class="control-group checkbox">
+            <input type="checkbox" id="show-dieline" checked />
+            <label for="show-dieline">Show cut and fold lines (dieline)</label>
+        </div>
+
+        <button id="print-btn" class="print-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9V2h12v7"></path>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <path d="M6 14h12v8H6z"></path>
+            </svg>
+            Print / Save as PDF
+        </button>
+        <p class="tip">💡 When clicked, select "Save as PDF" in your browser print dialog.
+        </p>
+    </aside>
+
+    <main class="preview-area">
+        <div id="print-wrapper">
+            <div id="box-container">
+                <!-- HTML Dieline Dust Flaps -->
+                <div class="panel-graphics" id="top-dust-1"></div>
+                <div class="panel-graphics" id="bot-dust-1"></div>
+                <div class="panel-graphics" id="top-dust-2"></div>
+                <div class="panel-graphics" id="bot-dust-2"></div>
+
+                <div class="panel-graphics" id="glue-flap"></div>
+
+                <div class="panel-graphics" id="panel-front">
+                    <img class="bg-layer" id="bg-front" src="" alt="" />
+                    <div class="unlock-header">
+                        <div class="header-slant"></div>
+                        <div class="top-info-bar">
+                            <span class="l-t">LEVEL</span>
+                            <span class="locks-container" id="locks-container"></span>
+                            <span class="icons-bar">
+                                <span class="circle-icon">10+</span>
+                                <span class="circle-icon">1-6</span>
+                                <span class="circle-icon">30'</span>
+                            </span>
+                        </div>
+                        <div class="logo-box">
+                            <h1>UNLOCK!</h1>
+                            <h2 id="series-title-display">SHORT ADVENTURES</h2>
+                        </div>
+                    </div>
+                    <div class="game-name-banner">
+                        <div class="b-slant"></div>
+                        <div class="b-text" id="game-title-display">THE FLIGHT OF THE ANGEL</div>
+                    </div>
+                    <div class="front-bottom-text">
+                        A COOPERATIVE card game<br />
+                        inspired by <strong>ESCAPE ROOMS !</strong>
+                    </div>
+                </div>
+
+                <div class="panel-graphics" id="panel-spine1">
+                    <div class="spine-bottom-brand">
+                        <div class="sb-title">UNLOCK!</div>
+                        <div class="sb-sub series-title-spine">SHORT ADVENTURES</div>
+                    </div>
+                    <div class="spine-text spine-bot game-title-spine">THE FLIGHT OF THE ANGEL</div>
+                    <div class="spine-top-brand">
+                        <span class="spine-locks spine-locks-left"></span>
+                        <div class="spine-level">LEVEL</div>
+                    </div>
+                </div>
+
+                <div class="panel-graphics" id="panel-back">
+                    <img class="bg-layer" id="bg-back" src="" alt="" />
+                    <div class="back-bot-content">
+                        <p class="desc">Ce jeu nécessite l’application gratuite UNLOCK! (machines, indices et
+                            solutions). Une fois téléchargée, aucune connexion Internet n’est requise.</p>
+                        <div class="qr-section">
+                            <div id="qr-code"></div>
+                            <div class="qr-text">
+                                SOLUTIONS & INDICES<br>
+                                <strong id="solution-url-display">spacecowboys-games.com</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-graphics" id="panel-spine2">
+                    <div class="spine-bottom-brand">
+                        <div class="sb-title">UNLOCK!</div>
+                        <div class="sb-sub series-title-spine">SHORT ADVENTURES</div>
+                    </div>
+                    <div class="spine-text spine-bot game-title-spine">THE FLIGHT OF THE ANGEL</div>
+                    <div class="spine-top-brand">
+                        <span class="spine-locks spine-locks-right"></span>
+                        <div class="spine-level">LEVEL</div>
+                    </div>
+                </div>
+
+                <!-- TOP FLAPS ON BACK -->
+                <div class="panel-graphics" id="top-roof"></div>
+                <div class="panel-graphics" id="top-tuck-flap"></div>
+
+                <!-- BOTTOM FLAPS ON BACK -->
+                <div class="panel-graphics" id="bot-flap"></div>
+                <div class="panel-graphics" id="bot-tuck-flap"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

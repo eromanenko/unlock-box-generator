@@ -812,7 +812,7 @@ p.tip {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 3.2mm;
     font-weight: 700;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,1);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 1);
     z-index: 3;
 }
 
@@ -847,7 +847,7 @@ p.tip {
 }
 
 .qr-text {
-    font-size: 2.2mm;
+    font-size: 3mm;
     line-height: 1.2;
     color: #444;
     flex: 1;
@@ -1091,18 +1091,19 @@ p.tip {
         background: none;
         padding: 0;
         overflow: visible;
-        display: block;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
     }
 
     #print-wrapper {
         padding: 0;
         box-shadow: none;
-        margin: 0 auto;
+        margin: 0;
     }
 
-    /* Force landscape paper if possible */
+    /* Let the browser handle paper size/orientation */
     @page {
-        size: A4 landscape;
         margin: 5mm;
     }
 

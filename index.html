@@ -21,6 +21,11 @@
         </div>
 
         <div class="control-group">
+            <label for="game-desc">Description</label>
+            <textarea id="game-desc" rows="3" style="resize: vertical;">Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!</textarea>
+        </div>
+
+        <div class="control-group">
             <label for="series-title">Series Name</label>
             <input type="text" id="series-title" value="SHORT ADVENTURES" />
         </div>
@@ -47,7 +52,7 @@
         <div class="control-group">
             <label for="box-depth">Box Depth (Thickness), mm</label>
             <input type="number" id="box-depth" value="10.4" step="0.1" />
-            <small>Recommended: 10-15 mm depending on card count</small>
+            <small>Recommended: 30 cards - 10 mm, 60 cards - 13-15 mm</small>
         </div>
 
         <div class="control-group">
@@ -65,6 +70,12 @@
             <label>Image (Back Panel)</label>
             <input type="file" id="back-image" accept="image/*" />
             <img class="thumbnail" id="back-thumb" style="display: none;" />
+        </div>
+
+        <div class="control-group">
+            <label for="box-bg-color">Box Background Color</label>
+            <input type="color" id="box-bg-color" value="#f5f5f5"
+                style="height: 35px; width: 100%; padding: 0; cursor: pointer; background: #333; border: 1px solid #444; border-radius: 4px;" />
         </div>
 
         <div class="control-group checkbox">
@@ -89,11 +100,11 @@
             <div id="box-container">
                 <!-- HTML Dieline Dust Flaps -->
                 <div class="panel-graphics" id="top-dust-1">
-                    <div class="dust-bg"></div>
+                    <div class="dust-bg bg-primary"></div>
                     <div class="dust-cut"></div>
                 </div>
                 <div class="panel-graphics" id="bot-dust-1">
-                    <div class="dust-bg"></div>
+                    <div class="dust-bg bg-primary"></div>
                     <div class="dust-cut"></div>
                 </div>
                 <div class="panel-graphics" id="top-dust-2">
@@ -112,6 +123,14 @@
 
                 <div class="panel-graphics" id="panel-front">
                     <img class="bg-layer" id="bg-front" src="" alt="" />
+                    <div class="image-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <span>Front Image</span>
+                    </div>
                     <div class="unlock-header">
                         <div class="header-slant"></div>
                         <div class="header-slant-blue"></div>
@@ -153,6 +172,15 @@
 
                 <div class="panel-graphics" id="panel-back">
                     <img class="bg-layer" id="bg-back" src="" alt="" />
+                    <div class="image-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <span>Back Image</span>
+                    </div>
+                    <div class="back-scenario-desc" id="back-desc-display">Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!</div>
                     <div class="back-bot-content">
                         <p class="desc">This game requires the free UNLOCK! app (machines, clues and solutions). Once
                             downloaded, no internet connection is required.</p>

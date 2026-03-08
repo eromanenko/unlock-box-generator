@@ -18,6 +18,7 @@
     --c-primary: #00a0e0;
     --c-green: #37c485;
     --c-text: #fff;
+    --box-bg: #f5f5f5;
 }
 
 * {
@@ -51,7 +52,7 @@ aside h1 {
     font-size: 24px;
     margin: 0;
     color: var(--c-primary);
-    font-family: 'Anton', sans-serif;
+    font-family: "Anton", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     letter-spacing: 1px;
 }
 
@@ -94,6 +95,7 @@ aside p.subtitle {
 
 .control-group input[type="text"],
 .control-group input[type="number"],
+.control-group textarea,
 .control-group select {
     background: #333;
     border: 1px solid #444;
@@ -226,9 +228,8 @@ p.tip {
     left: 0;
     width: 100%;
     height: 100%;
-    background: white;
+    background: var(--box-bg);
     clip-path: polygon(0 2.68mm, 100% 0, 100% 100%, 0 calc(100% - 2.68mm));
-    z-index: -1;
 }
 
 #panel-front {
@@ -236,7 +237,7 @@ p.tip {
     left: var(--w-glue);
     width: var(--w-front);
     height: var(--h-main);
-    background: #eee;
+    background: var(--box-bg);
 }
 
 #panel-spine1 {
@@ -244,7 +245,7 @@ p.tip {
     left: calc(var(--w-glue) + var(--w-front));
     width: var(--depth-mm);
     height: var(--h-main);
-    background: var(--c-primary);
+    background: var(--box-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -255,7 +256,7 @@ p.tip {
     left: calc(var(--w-glue) + var(--w-front) + var(--depth-mm));
     width: var(--w-front);
     height: var(--h-main);
-    background: #eee;
+    background: var(--box-bg);
 }
 
 #panel-spine2 {
@@ -263,7 +264,7 @@ p.tip {
     left: calc(var(--w-glue) + var(--w-front) * 2 + var(--depth-mm));
     width: var(--depth-mm);
     height: var(--h-main);
-    background: var(--c-primary);
+    background: var(--box-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -275,7 +276,7 @@ p.tip {
     left: calc(var(--w-glue) + var(--w-front) + var(--depth-mm));
     width: var(--w-front);
     height: var(--depth-mm);
-    background: var(--c-primary);
+    background: var(--box-bg);
 }
 
 #top-tuck-flap {
@@ -283,7 +284,7 @@ p.tip {
     left: calc(var(--w-glue) + var(--w-front) + var(--depth-mm));
     width: var(--w-front);
     height: var(--flap);
-    background: #fff;
+    background: var(--box-bg);
 }
 
 /* Bottom structure (on Back) */
@@ -292,7 +293,7 @@ p.tip {
     left: calc(var(--w-glue) + var(--w-front) + var(--depth-mm));
     width: var(--w-front);
     height: var(--depth-mm);
-    background: #fff;
+    background: var(--box-bg);
 }
 
 #bot-tuck-flap {
@@ -300,7 +301,7 @@ p.tip {
     left: calc(var(--w-glue) + var(--w-front) + var(--depth-mm));
     width: var(--w-front);
     height: var(--flap);
-    background: #fff;
+    background: var(--box-bg);
 }
 
 /* New Dust Flaps */
@@ -318,15 +319,15 @@ p.tip {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #fff;
-    /* Default to white for the right side */
+    background: var(--box-bg);
+    /* Default to box color for the right side */
 }
 
-#top-dust-1 .dust-bg,
-#bot-dust-1 .dust-bg {
+.bg-primary {
     background: var(--c-primary);
-    /* Left spine flaps are blue */
 }
+
+
 
 #top-dust-1 {
     top: calc(var(--y-main) - var(--depth-mm));
@@ -558,6 +559,44 @@ p.tip {
     height: 100%;
     object-fit: cover;
     z-index: 1;
+    background: var(--box-bg);
+}
+
+.bg-layer[src=""] {
+    display: none;
+}
+
+.image-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--box-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 3.5mm;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5mm;
+    z-index: 0;
+}
+
+.image-placeholder svg {
+    width: 12mm;
+    height: 12mm;
+    margin-bottom: 2mm;
+    opacity: 0.5;
+}
+
+#panel-front .bg-layer,
+#panel-front .image-placeholder {
+    top: 40mm;
+    height: calc(100% - 40mm);
 }
 
 .unlock-header {
@@ -572,7 +611,7 @@ p.tip {
 
 .header-slant {
     position: absolute;
-    background: #fff;
+    background: var(--box-bg);
     width: 150%;
     height: 48mm;
     transform: rotate(-3deg);
@@ -592,7 +631,6 @@ p.tip {
     top: -3mm;
     left: -10%;
     transform-origin: center;
-    box-shadow: 0 1mm 2mm rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
 
@@ -666,7 +704,7 @@ p.tip {
 }
 
 .logo-box h1 {
-    font-family: 'Anton', sans-serif;
+    font-family: "Anton", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     color: #111;
     margin: 0;
     font-size: 14mm;
@@ -732,7 +770,7 @@ p.tip {
     bottom: 0;
     left: 4mm;
     width: 100%;
-    background: #fff;
+    background: var(--box-bg);
     transform: rotate(-5deg) scale(1.1);
     transform-origin: bottom right;
     padding: 3mm 0 6mm;
@@ -751,7 +789,7 @@ p.tip {
     left: 0;
     width: 100%;
     height: 35mm;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--box-bg);
     z-index: 2;
     padding: 3mm;
     font-size: 2.2mm;
@@ -761,6 +799,21 @@ p.tip {
     flex-direction: column;
     gap: 2mm;
     box-shadow: 0 -2mm 5mm rgba(0, 0, 0, 0.1);
+}
+
+.back-scenario-desc {
+    position: absolute;
+    bottom: 35mm;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 2mm 5mm;
+    color: #fff;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 3.2mm;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,1);
+    z-index: 3;
 }
 
 .back-bot-content .desc {
@@ -809,14 +862,6 @@ p.tip {
 }
 
 /* SPINE STYLES */
-#panel-spine1 {
-    background: #fff;
-}
-
-#panel-spine2 {
-    background: #fff;
-}
-
 .spine-text {
     position: absolute;
     color: #000;
@@ -928,7 +973,7 @@ p.tip {
 
 .spine-level {
     color: #fff;
-    font-family: 'Anton', sans-serif;
+    font-family: "Anton", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 2.5mm;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
@@ -976,7 +1021,7 @@ p.tip {
 
 .sb-title {
     color: #fff;
-    font-family: 'Anton', sans-serif;
+    font-family: "Anton", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 6mm;
     line-height: 1;
 }
@@ -992,7 +1037,7 @@ p.tip {
 
 .sbw-title {
     color: #111;
-    font-family: 'Anton', sans-serif;
+    font-family: "Anton", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 6mm;
     line-height: 1;
 }

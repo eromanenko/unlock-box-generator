@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Inputs
     const titleIn = document.getElementById('game-title');
+    const descIn = document.getElementById('game-desc');
     const seriesIn = document.getElementById('series-title');
     const diffIn = document.getElementById('difficulty');
     const ageIn = document.getElementById('param-age');
@@ -13,9 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const bThumb = document.getElementById('back-thumb');
     const printBtn = document.getElementById('print-btn');
     const showDieline = document.getElementById('show-dieline');
+    const bgColIn = document.getElementById('box-bg-color');
     
     // Outputs
     const titleOutList = document.querySelectorAll('#game-title-display, .game-title-spine');
+    const descOut = document.getElementById('back-desc-display');
     const seriesOutList = document.querySelectorAll('#series-title-display, .series-title-spine');
     const ageOutList = document.querySelectorAll('.out-age');
     const timeOutList = document.querySelectorAll('.out-time');
@@ -76,6 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
         titleOutList.forEach(el => el.textContent = titleIn.value.toUpperCase());
     }
 
+    function updateDesc() {
+        if(descOut) descOut.textContent = descIn.value;
+    }
+
     function updateSeries() {
         seriesOutList.forEach(el => el.textContent = seriesIn.value.toUpperCase());
     }
@@ -132,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Bindings
     titleIn.addEventListener('input', updateTitle);
+    descIn.addEventListener('input', updateDesc);
     seriesIn.addEventListener('input', updateSeries);
     ageIn.addEventListener('input', updateAge);
     timeIn.addEventListener('input', updateTime);
@@ -149,6 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    bgColIn.addEventListener('input', (e) => {
+        document.documentElement.style.setProperty('--box-bg', e.target.value);
+    });
+
     printBtn.addEventListener('click', () => {
         const originalTitle = document.title;
         document.title = `Unlock! ${titleIn.value.trim()}. Box`;
@@ -158,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Init
     updateTitle();
+    updateDesc();
     updateSeries();
     updateAge();
     updateTime();

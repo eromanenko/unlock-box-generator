@@ -10,8 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const solutionIn = document.getElementById("solution-url");
   const fImageIn = document.getElementById("front-image");
   const bImageIn = document.getElementById("back-image");
+  const flapsImageIn = document.getElementById("flaps-image");
   const fThumb = document.getElementById("front-thumb");
   const bThumb = document.getElementById("back-thumb");
+  const flapsThumb = document.getElementById("flaps-thumb");
   const printBtn = document.getElementById("print-btn");
   const showDieline = document.getElementById("show-dieline");
   const bgColIn = document.getElementById("box-bg-color");
@@ -35,6 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Geometry outputs
   const bgFront = document.getElementById("bg-front");
   const bgBack = document.getElementById("bg-back");
+  const topFlapImg = document.getElementById("top-flap-img");
+  const botFlapImg = document.getElementById("bot-flap-img");
+  const topFlapText = document.getElementById("top-flap-text");
+  const botFlapText = document.getElementById("bot-flap-text");
   const printWrapper = document.getElementById("print-wrapper");
   const rootStyle = document.documentElement.style;
 
@@ -190,11 +196,39 @@ document.addEventListener("DOMContentLoaded", () => {
     thumbOut.style.display = "block";
   }
 
+  function handleFlapsImageUpload() {
+    const file = flapsImageIn.files[0];
+    if (!file) {
+      topFlapImg.style.display = "none";
+      botFlapImg.style.display = "none";
+      topFlapImg.src = "";
+      botFlapImg.src = "";
+      flapsThumb.style.display = "none";
+      topFlapText.style.display = "block";
+      botFlapText.style.display = "block";
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    topFlapImg.src = url;
+    botFlapImg.src = url;
+    topFlapImg.style.display = "block";
+    botFlapImg.style.display = "block";
+    flapsThumb.src = url;
+    flapsThumb.style.display = "block";
+
+    topFlapText.style.display = "none";
+    botFlapText.style.display = "none";
+  }
+
   function updateDieline() {
     let D = parseFloat(depthIn.value);
     if (isNaN(D) || D < 5) D = 10.4;
 
     rootStyle.setProperty("--depth-mm", D + "mm");
+
+    // glue block max width 13mm
+    let glueWidth = Math.min(D, 13);
+    rootStyle.setProperty("--w-glue", glueWidth + "mm");
   }
 
   // Bindings
@@ -212,6 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
   bImageIn.addEventListener("change", () =>
     handleImageUpload(bImageIn, bgBack, bThumb),
   );
+  flapsImageIn.addEventListener("change", handleFlapsImageUpload);
 
   showDieline.addEventListener("change", (e) => {
     if (e.target.checked) {

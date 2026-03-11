@@ -475,6 +475,7 @@ p.tip {
   background: #1a237e;
   transform-origin: right top;
   transform: rotate(-15deg);
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #glue-flap::after {
@@ -487,6 +488,7 @@ p.tip {
   background: #1a237e;
   transform-origin: right bottom;
   transform: rotate(15deg);
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #glue-flap .glue-left-cut {
@@ -537,6 +539,7 @@ p.tip {
   right: var(--flap-shift-15);
   height: 1px;
   background: #1a237e;
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #top-tuck-flap::before {
@@ -549,6 +552,7 @@ p.tip {
   background: #1a237e;
   transform-origin: bottom left;
   transform: rotate(15deg);
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #top-tuck-flap::after {
@@ -561,6 +565,7 @@ p.tip {
   background: #1a237e;
   transform-origin: bottom right;
   transform: rotate(-15deg);
+  z-index: 2;
 }
 
 /* Bottom Back Flaps */
@@ -582,6 +587,7 @@ p.tip {
   right: var(--flap-shift-15);
   height: 1px;
   background: #1a237e;
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #bot-tuck-flap::before {
@@ -594,6 +600,7 @@ p.tip {
   background: #1a237e;
   transform-origin: top left;
   transform: rotate(-15deg);
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #bot-tuck-flap::after {
@@ -606,6 +613,7 @@ p.tip {
   background: #1a237e;
   transform-origin: top right;
   transform: rotate(15deg);
+  z-index: 2;
 }
 
 /* Dust Flaps Dieline */
@@ -639,6 +647,7 @@ p.tip {
   background: #1a237e;
   transform-origin: bottom left;
   transform: rotate(15deg);
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #top-dust-1::after,
@@ -652,6 +661,7 @@ p.tip {
   background: #1a237e;
   transform-origin: bottom right;
   transform: rotate(-15deg);
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #bot-dust-1,
@@ -684,6 +694,7 @@ p.tip {
   background: #1a237e;
   transform-origin: top left;
   transform: rotate(-15deg);
+  z-index: 2;
 }
 
 #print-wrapper:not(.dieline-hidden) #bot-dust-1::after,
@@ -697,6 +708,7 @@ p.tip {
   background: #1a237e;
   transform-origin: top right;
   transform: rotate(15deg);
+  z-index: 2;
 }
 
 /* OVERLAYS ON FRONT */

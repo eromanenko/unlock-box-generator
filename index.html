@@ -20,6 +20,28 @@
       <input type="text" id="game-title" value="LE DONJON DE DOO-ARANN" />
     </div>
 
+    <div class="control-row">
+      <div class="control-group">
+        <label for="spine-font">Spine Font</label>
+        <input type="text" id="spine-font" list="font-list" value="'Roboto Slab', serif" />
+        <datalist id="font-list">
+          <option value="'Roboto Slab', serif"></option>
+          <option value="'Roboto Condensed', sans-serif"></option>
+          <option value="'Anton', sans-serif"></option>
+          <option value="Arial, sans-serif"></option>
+          <option value="'Times New Roman', serif"></option>
+          <option value="Impact, sans-serif"></option>
+          <option value="'Comic Sans MS', cursive"></option>
+          <option value="Georgia, serif"></option>
+          <option value="'Courier New', monospace"></option>
+        </datalist>
+      </div>
+      <div class="control-group small-input">
+        <label for="spine-font-size">Font Size</label>
+        <input type="number" id="spine-font-size" value="3.5" step="0.1" />
+      </div>
+    </div>
+
     <div class="control-group">
       <label for="game-desc">Description</label>
       <textarea id="game-desc" rows="3" style="resize: vertical">
@@ -52,7 +74,7 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
 
     <div class="control-group">
       <label for="box-depth">Box Depth (Thickness), mm</label>
-      <input type="number" id="box-depth" value="10.4" step="0.1" />
+      <input type="number" id="box-depth" value="13" step="0.1" />
       <small>Recommended: 30 cards - 10 mm, 60 cards - 13-15 mm</small>
     </div>
 
@@ -108,6 +130,23 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
     <p class="tip">
       💡 When clicked, select "Save as PDF" in the print dialog.
     </p>
+
+    <hr class="separator" />
+
+    <div class="control-group">
+      <label>Configurations (Text & Settings only)</label>
+      <div class="control-row">
+        <input type="text" id="config-name" placeholder="Save as..." style="flex:1; width:auto;" />
+        <button id="save-config-btn" class="secondary-btn">Save</button>
+      </div>
+      <div class="control-row" style="margin-top: 5px;">
+        <select id="load-config-select" style="flex:1; width:auto;">
+          <option value="">-- Load Config --</option>
+        </select>
+        <button id="load-config-btn" class="secondary-btn">Load</button>
+        <button id="delete-config-btn" class="danger-btn" title="Delete selected">✖</button>
+      </div>
+    </div>
   </aside>
 
   <main class="preview-area">

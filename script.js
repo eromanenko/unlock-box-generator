@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Inputs
   const titleIn = document.getElementById("game-title");
+  const spineFontIn = document.getElementById("spine-font");
+  const spineFontSizeIn = document.getElementById("spine-font-size");
   const descIn = document.getElementById("game-desc");
   const seriesIn = document.getElementById("series-title");
   const diffIn = document.getElementById("difficulty");
@@ -17,6 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const printBtn = document.getElementById("print-btn");
   const showDieline = document.getElementById("show-dieline");
   const bgColIn = document.getElementById("box-bg-color");
+  
+  // Config
+  const configNameIn = document.getElementById("config-name");
+  const saveConfigBtn = document.getElementById("save-config-btn");
+  const loadConfigSelect = document.getElementById("load-config-select");
+  const loadConfigBtn = document.getElementById("load-config-btn");
+  const deleteConfigBtn = document.getElementById("delete-config-btn");
 
   // Outputs
   const titleOutList = document.querySelectorAll(
@@ -231,8 +240,144 @@ document.addEventListener("DOMContentLoaded", () => {
     rootStyle.setProperty("--w-glue", glueWidth + "mm");
   }
 
+  // --- CONFIG MANAGEMENT ---
+  const CONFIG_KEY = "unlock_box_configs";
+
+  function getConfigs() {
+    try {
+      return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveConfigs(configs) {
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(configs));
+  }
+
+  function updateConfigDropdown() {
+    if (!loadConfigSelect) return;
+    const configs = getConfigs();
+    loadConfigSelect.innerHTML = '<option value="">-- Load Config --</option>';
+    Object.keys(configs).forEach((name) => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      loadConfigSelect.appendChild(opt);
+    });
+  }
+
+  function handleSaveConfig() {
+    const name = configNameIn.value.trim();
+    if (!name) {
+      alert("Please enter a name for the configuration.");
+      return;
+    }
+
+    const configs = getConfigs();
+    configs[name] = {
+      title: titleIn.value,
+      spineFont: spineFontIn.value,
+      spineFontSize: spineFontSizeIn.value,
+      desc: descIn.value,
+      series: seriesIn.value,
+      difficulty: diffIn.value,
+      age: ageIn.value,
+      time: timeIn.value,
+      depth: depthIn.value,
+      solutionUrl: solutionIn.value,
+      bgColor: bgColIn.value,
+      showDieline: showDieline.checked,
+    };
+
+    saveConfigs(configs);
+    updateConfigDropdown();
+    loadConfigSelect.value = name;
+
+    const origText = saveConfigBtn.textContent;
+    saveConfigBtn.textContent = "Saved!";
+    setTimeout(() => {
+      saveConfigBtn.textContent = origText;
+    }, 1500);
+  }
+
+  function handleLoadConfig() {
+    const name = loadConfigSelect.value;
+    if (!name) return;
+
+    const configs = getConfigs();
+    const config = configs[name];
+    if (!config) return;
+
+    if (config.title !== undefined) titleIn.value = config.title;
+    if (config.spineFont !== undefined) {
+      spineFontIn.value = config.spineFont;
+      document.documentElement.style.setProperty("--spine-font", config.spineFont);
+    }
+    if (config.spineFontSize !== undefined) {
+      spineFontSizeIn.value = config.spineFontSize;
+      document.documentElement.style.setProperty(
+        "--spine-font-size",
+        config.spineFontSize + "mm"
+      );
+    }
+    if (config.desc !== undefined) descIn.value = config.desc;
+    if (config.series !== undefined) seriesIn.value = config.series;
+    if (config.difficulty !== undefined) diffIn.value = config.difficulty;
+    if (config.age !== undefined) ageIn.value = config.age;
+    if (config.time !== undefined) timeIn.value = config.time;
+    if (config.depth !== undefined) depthIn.value = config.depth;
+    if (config.solutionUrl !== undefined) solutionIn.value = config.solutionUrl;
+    if (config.bgColor !== undefined) {
+      bgColIn.value = config.bgColor;
+      document.documentElement.style.setProperty("--box-bg", config.bgColor);
+    }
+    if (config.showDieline !== undefined) {
+      showDieline.checked = config.showDieline;
+      if (config.showDieline) {
+        printWrapper.classList.remove("dieline-hidden");
+      } else {
+        printWrapper.classList.add("dieline-hidden");
+      }
+    }
+
+    configNameIn.value = name;
+
+    updateTitle();
+    updateDesc();
+    updateSeries();
+    updateAge();
+    updateTime();
+    updateQRCode();
+    updateLocks();
+    updateDieline();
+  }
+
+  function handleDeleteConfig() {
+    const name = loadConfigSelect.value;
+    if (!name) return;
+
+    if (!confirm(`Delete configuration "${name}"?`)) return;
+
+    const configs = getConfigs();
+    delete configs[name];
+    saveConfigs(configs);
+
+    updateConfigDropdown();
+    configNameIn.value = "";
+  }
+
   // Bindings
   titleIn.addEventListener("input", updateTitle);
+  spineFontIn.addEventListener("input", (e) => {
+    document.documentElement.style.setProperty("--spine-font", e.target.value);
+  });
+  spineFontSizeIn.addEventListener("input", (e) => {
+    document.documentElement.style.setProperty(
+      "--spine-font-size",
+      e.target.value + "mm"
+    );
+  });
   descIn.addEventListener("input", updateDesc);
   seriesIn.addEventListener("input", updateSeries);
   ageIn.addEventListener("input", updateAge);
@@ -267,6 +412,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.title = originalTitle;
   });
 
+  if (saveConfigBtn) saveConfigBtn.addEventListener("click", handleSaveConfig);
+  if (loadConfigBtn) loadConfigBtn.addEventListener("click", handleLoadConfig);
+  if (deleteConfigBtn) deleteConfigBtn.addEventListener("click", handleDeleteConfig);
+
   // Init
   updateTitle();
   updateDesc();
@@ -276,6 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateQRCode();
   updateLocks();
   updateDieline();
+  updateConfigDropdown();
 
   // Adjust letter spacing after custom fonts are loaded
   if (document.fonts) {

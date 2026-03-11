@@ -32,13 +32,16 @@
           <option value="'Times New Roman', serif"></option>
           <option value="Impact, sans-serif"></option>
           <option value="'Comic Sans MS', cursive"></option>
+          <option value="'Brush Script MT', cursive"></option>
+          <option value="'Segoe Script', cursive"></option>
+          <option value="'Lucida Handwriting', cursive"></option>
           <option value="Georgia, serif"></option>
           <option value="'Courier New', monospace"></option>
         </datalist>
       </div>
       <div class="control-group small-input">
         <label for="spine-font-size">Font Size</label>
-        <input type="number" id="spine-font-size" value="3.5" step="0.1" />
+        <input type="number" id="spine-font-size" value="4" step="0.1" />
       </div>
     </div>
 
@@ -284,7 +287,10 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
             LE DONJON DE DOO-ARANN
           </div>
         </div>
-        <div class="panel-graphics" id="top-tuck-flap"></div>
+        <div class="panel-graphics" id="top-tuck-flap">
+          <div class="tuck-bg top-tuck-bg"></div>
+          <div class="tuck-cut-top"></div>
+        </div>
 
         <!-- BOTTOM FLAPS ON BACK -->
         <div class="panel-graphics" id="bot-flap">
@@ -293,7 +299,10 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
             LE DONJON DE DOO-ARANN
           </div>
         </div>
-        <div class="panel-graphics" id="bot-tuck-flap"></div>
+        <div class="panel-graphics" id="bot-tuck-flap">
+          <div class="tuck-bg bot-tuck-bg"></div>
+          <div class="tuck-cut-bot"></div>
+        </div>
       </div>
     </div>
   </main>

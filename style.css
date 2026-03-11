@@ -8,6 +8,8 @@
   --glue-shift-15: calc(var(--w-glue) * 0.2679);
   --glue-hyp-15: calc(var(--w-glue) / 0.9659);
   --flap: 15mm;
+  --flap-shift-15: calc(var(--flap) * 0.2679);
+  --flap-hyp-15: calc(var(--flap) / 0.9659);
   --y-main: calc(var(--flap) + var(--depth-mm));
 
   --shift-15: calc(var(--depth-mm) * 0.2679);
@@ -22,7 +24,7 @@
   --c-text: #fff;
   --box-bg: #f5f5f5;
   --spine-font: "Roboto Slab", serif;
-  --spine-font-size: 3.5mm;
+  --spine-font-size: 4mm;
 }
 
 * {
@@ -334,7 +336,7 @@ p.tip {
   left: calc(var(--w-glue) + var(--w-front) + var(--depth-mm));
   width: var(--w-front);
   height: var(--flap);
-  background: var(--box-bg);
+  background: transparent;
 }
 
 /* Bottom structure (on Back) */
@@ -351,7 +353,26 @@ p.tip {
   left: calc(var(--w-glue) + var(--w-front) + var(--depth-mm));
   width: var(--w-front);
   height: var(--flap);
+  background: transparent;
+}
+
+.tuck-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: var(--box-bg);
+}
+
+.top-tuck-bg {
+  clip-path: polygon(var(--flap-shift-15) 0, calc(100% - var(--flap-shift-15)) 0, 100% 100%, 0 100%);
+  border-radius: 4mm 4mm 0 0;
+}
+
+.bot-tuck-bg {
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--flap-shift-15)) 100%, var(--flap-shift-15) 100%);
+  border-radius: 0 0 4mm 4mm;
 }
 
 /* New Dust Flaps */
@@ -494,8 +515,6 @@ p.tip {
 }
 
 #print-wrapper:not(.dieline-hidden) #panel-spine2 {
-  border-top: 1px solid #1a237e;
-  border-bottom: 1px solid #1a237e;
   border-right: 1px solid #1a237e;
 }
 
@@ -507,10 +526,41 @@ p.tip {
 }
 
 #print-wrapper:not(.dieline-hidden) #top-tuck-flap {
-  border-top: 1px solid #1a237e;
-  border-left: 1px solid #1a237e;
-  border-right: 1px solid #1a237e;
-  border-radius: 4mm 4mm 0 0;
+  border: none;
+  border-radius: 0;
+}
+
+#print-wrapper:not(.dieline-hidden) #top-tuck-flap .tuck-cut-top {
+  position: absolute;
+  top: 0;
+  left: var(--flap-shift-15);
+  right: var(--flap-shift-15);
+  height: 1px;
+  background: #1a237e;
+}
+
+#print-wrapper:not(.dieline-hidden) #top-tuck-flap::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: var(--flap-hyp-15);
+  background: #1a237e;
+  transform-origin: bottom left;
+  transform: rotate(15deg);
+}
+
+#print-wrapper:not(.dieline-hidden) #top-tuck-flap::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  height: var(--flap-hyp-15);
+  background: #1a237e;
+  transform-origin: bottom right;
+  transform: rotate(-15deg);
 }
 
 /* Bottom Back Flaps */
@@ -521,10 +571,41 @@ p.tip {
 }
 
 #print-wrapper:not(.dieline-hidden) #bot-tuck-flap {
-  border-bottom: 1px solid #1a237e;
-  border-left: 1px solid #1a237e;
-  border-right: 1px solid #1a237e;
-  border-radius: 0 0 4mm 4mm;
+  border: none;
+  border-radius: 0;
+}
+
+#print-wrapper:not(.dieline-hidden) #bot-tuck-flap .tuck-cut-bot {
+  position: absolute;
+  bottom: 0;
+  left: var(--flap-shift-15);
+  right: var(--flap-shift-15);
+  height: 1px;
+  background: #1a237e;
+}
+
+#print-wrapper:not(.dieline-hidden) #bot-tuck-flap::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: var(--flap-hyp-15);
+  background: #1a237e;
+  transform-origin: top left;
+  transform: rotate(-15deg);
+}
+
+#print-wrapper:not(.dieline-hidden) #bot-tuck-flap::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1px;
+  height: var(--flap-hyp-15);
+  background: #1a237e;
+  transform-origin: top right;
+  transform: rotate(15deg);
 }
 
 /* Dust Flaps Dieline */

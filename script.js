@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const CDN_URL = "https://cdn.jsdelivr.net/gh/gamepage-web/unssets@main/";
+  let gamesData = null;
+  let descriptionsData = null;
+
   // Inputs
   const titleIn = document.getElementById("game-title");
   const spineFontIn = document.getElementById("spine-font");
@@ -26,6 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadConfigSelect = document.getElementById("load-config-select");
   const loadConfigBtn = document.getElementById("load-config-btn");
   const deleteConfigBtn = document.getElementById("delete-config-btn");
+
+  const gameSelector = document.getElementById("game-selector");
+  const langSelector = document.getElementById("lang-selector");
 
   // Outputs
   const titleOutList = document.querySelectorAll(
@@ -416,7 +423,127 @@ document.addEventListener("DOMContentLoaded", () => {
   if (loadConfigBtn) loadConfigBtn.addEventListener("click", handleLoadConfig);
   if (deleteConfigBtn) deleteConfigBtn.addEventListener("click", handleDeleteConfig);
 
+  // --- GAME DATA FETCHING ---
+  async function initGameData() {
+    try {
+      const [unlockRes, descRes] = await Promise.all([
+        fetch(`${CDN_URL}GameData/Unlock.json`),
+        fetch(`${CDN_URL}GameData/descriptions.json`)
+      ]);
+      gamesData = await unlockRes.json();
+      descriptionsData = await descRes.json();
+      populateGameSelector();
+    } catch (e) {
+      console.error("Failed to fetch game data:", e);
+    }
+  }
+
+  function populateGameSelector() {
+    if (!gamesData || !gameSelector) return;
+    
+    // Clear and add default option
+    gameSelector.innerHTML = '<option value="">-- Choose a Game --</option>';
+    
+    gamesData.boxes.forEach(box => {
+      if (box.visible === "False") return;
+      
+      const group = document.createElement("optgroup");
+      group.label = box.displayName || box.ID;
+      
+      box.adventures.forEach(advId => {
+        const opt = document.createElement("option");
+        opt.value = advId;
+        opt.textContent = advId; // Initially ID, will update if possible
+        opt.dataset.boxId = box.ID;
+        group.appendChild(opt);
+      });
+      
+      gameSelector.appendChild(group);
+    });
+  }
+
+  async function handleGameChange() {
+    const gameId = gameSelector.value;
+    const lang = langSelector.value;
+    if (!gameId) return;
+
+    try {
+      // 1. Fetch Game Manifest for difficulty and skin
+      const manifestRes = await fetch(`${CDN_URL}GameData/${gameId}/${gameId}.json`);
+      const manifest = await manifestRes.json();
+      
+      // 2. Fetch Locale for title
+      let title = gameId;
+      try {
+        const langMap = { "en": "English", "fr": "French", "uk": "Ukrainian", "ru": "Russian" };
+        const fullLang = langMap[lang] || "English";
+        const localeRes = await fetch(`${CDN_URL}GameData/${gameId}/Locale/${fullLang}/locale.json`);
+        const locale = await localeRes.json();
+        title = locale.localizations.title || gameId;
+      } catch (e) {
+        console.warn(`Locale not found for ${gameId} in ${lang}`);
+        if (manifest.displayName) title = manifest.displayName;
+      }
+
+      // 3. Get Description
+      const desc = (descriptionsData[gameId] && descriptionsData[gameId][lang]) 
+        ? descriptionsData[gameId][lang] 
+        : (descriptionsData[gameId] && descriptionsData[gameId]["en"]) || "";
+
+      // 4. Update Form
+      titleIn.value = title;
+      descIn.value = desc;
+      if (manifest.difficulty) diffIn.value = manifest.difficulty;
+      if (manifest.maxTime) {
+        timeIn.value = Math.round(parseInt(manifest.maxTime) / 60);
+      }
+      
+      // Box ID determines series title
+      const selectedOpt = gameSelector.options[gameSelector.selectedIndex];
+      const boxId = selectedOpt.dataset.boxId;
+      
+      // Set Box Depth based on box type
+      if (boxId === "Short" || boxId === "Demos") {
+        depthIn.value = 10;
+      } else {
+        depthIn.value = 13;
+      }
+
+      const box = gamesData.boxes.find(b => b.ID === boxId);
+      seriesIn.value = (box.displayName || box.ID).toUpperCase();
+
+      // Update Images from CDN
+      const frontUrl = `${CDN_URL}images/icons/${gameId}.png`;
+      const backUrl = `${CDN_URL}Skins/${manifest.skinName || gameId}_fond.jpg`;
+      
+      bgFront.src = frontUrl;
+      bgBack.src = backUrl;
+      
+      // Update thumbnails
+      fThumb.src = frontUrl;
+      fThumb.style.display = "block";
+      bThumb.src = backUrl;
+      bThumb.style.display = "block";
+
+      // Trigger updates
+      updateTitle();
+      updateDesc();
+      updateSeries();
+      updateLocks();
+      updateTime();
+      updateDieline();
+      updateQRCode();
+
+    } catch (e) {
+      console.error("Error loading game data:", e);
+    }
+  }
+
+  gameSelector.addEventListener("change", handleGameChange);
+  langSelector.addEventListener("change", handleGameChange);
+
   // Init
+  initGameData();
   updateTitle();
   updateDesc();
   updateSeries();

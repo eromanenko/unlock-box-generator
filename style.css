@@ -973,6 +973,8 @@ p.tip {
   left: 0;
   width: 100%;
   text-align: center;
+  text-wrap: balance;
+  text-wrap: pretty;
   padding: 2mm 5mm;
   color: #fff;
   font-family: "Roboto Condensed", sans-serif;

@@ -22,6 +22,7 @@
   <meta name="twitter:image" content="https://unlock-box-generator.netlify.app/og-image.png" />
 
   <title>UNLOCK! Box Generator</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Condensed:wght@400;700&display=swap"
     rel="stylesheet" />
@@ -31,6 +32,24 @@
   <aside class="sidebar noprint">
     <h1>UNLOCK! Box Generator</h1>
     <p class="subtitle">Create your custom adventure box</p>
+
+    <div class="control-row">
+      <div class="control-group">
+        <label for="game-selector">Select Game</label>
+        <select id="game-selector">
+          <option value="">-- Choose a Game --</option>
+        </select>
+      </div>
+      <div class="control-group small-input">
+        <label for="lang-selector">Lang</label>
+        <select id="lang-selector">
+          <option value="en" selected>EN</option>
+          <option value="fr">FR</option>
+          <option value="uk">UK</option>
+          <option value="ru">RU</option>
+        </select>
+      </div>
+    </div>
 
     <div class="control-group">
       <label for="game-title">Game Title</label>

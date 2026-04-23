@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const CDN_URL = "https://cdn.jsdelivr.net/gh/gamepage-web/unssets@main/";
+  //  const CDN_URL = "https://cdn.jsdelivr.net/gh/gamepage-web/unssets@main/";
+  const CDN_URL = "https://raw.githubusercontent.com/gamepage-web/unssets/main/";
   let gamesData = null;
   let descriptionsData = null;
 
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const printBtn = document.getElementById("print-btn");
   const showDieline = document.getElementById("show-dieline");
   const bgColIn = document.getElementById("box-bg-color");
-  
+
   // Config
   const configNameIn = document.getElementById("config-name");
   const saveConfigBtn = document.getElementById("save-config-btn");
@@ -440,24 +441,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function populateGameSelector() {
     if (!gamesData || !gameSelector) return;
-    
+
     // Clear and add default option
     gameSelector.innerHTML = '<option value="">-- Choose a Game --</option>';
-    
+
     gamesData.boxes.forEach(box => {
       if (box.visible === "False") return;
-      
+
       const group = document.createElement("optgroup");
       group.label = box.displayName || box.ID;
-      
+
       box.adventures.forEach(advId => {
         const opt = document.createElement("option");
         opt.value = advId;
-        opt.textContent = advId; // Initially ID, will update if possible
+        // Use nameEn from descriptions.json if available, otherwise fallback to advId
+        const displayName = (descriptionsData[advId] && descriptionsData[advId].nameEn)
+          ? descriptionsData[advId].nameEn
+          : advId;
+        opt.textContent = displayName;
         opt.dataset.boxId = box.ID;
         group.appendChild(opt);
       });
-      
+
       gameSelector.appendChild(group);
     });
   }
@@ -471,7 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // 1. Fetch Game Manifest for difficulty and skin
       const manifestRes = await fetch(`${CDN_URL}GameData/${gameId}/${gameId}.json`);
       const manifest = await manifestRes.json();
-      
+
       // 2. Fetch Locale for title
       let title = gameId;
       try {
@@ -486,8 +491,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // 3. Get Description
-      const desc = (descriptionsData[gameId] && descriptionsData[gameId][lang]) 
-        ? descriptionsData[gameId][lang] 
+      const desc = (descriptionsData[gameId] && descriptionsData[gameId][lang])
+        ? descriptionsData[gameId][lang]
         : (descriptionsData[gameId] && descriptionsData[gameId]["en"]) || "";
 
       // 4. Update Form
@@ -497,11 +502,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (manifest.maxTime) {
         timeIn.value = Math.round(parseInt(manifest.maxTime) / 60);
       }
-      
+
       // Box ID determines series title
       const selectedOpt = gameSelector.options[gameSelector.selectedIndex];
       const boxId = selectedOpt.dataset.boxId;
-      
+
       // Set Box Depth based on box type
       if (boxId === "Short" || boxId === "Demos") {
         depthIn.value = 10;
@@ -515,10 +520,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update Images from CDN
       const frontUrl = `${CDN_URL}images/icons/${gameId}.png`;
       const backUrl = `${CDN_URL}Skins/${manifest.skinName || gameId}_fond.jpg`;
-      
+
       bgFront.src = frontUrl;
       bgBack.src = backUrl;
-      
+
       // Update thumbnails
       fThumb.src = frontUrl;
       fThumb.style.display = "block";

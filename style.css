@@ -83,6 +83,7 @@ aside p.subtitle {
 
 .control-row .control-group {
   flex: 1;
+  min-width: 0;
 }
 
 .control-row .control-group.small-input {
@@ -112,6 +113,11 @@ aside p.subtitle {
   border-radius: 4px;
   font-size: 16px;
   font-family: inherit;
+  width: 100%;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .control-group input[type="file"] {

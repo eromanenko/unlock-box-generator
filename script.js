@@ -211,6 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
     imgOut.src = url;
     thumbOut.src = url;
     thumbOut.style.display = "block";
+    // Reset position
+    imgOut.style.setProperty("--obj-pos-y", "0px");
   }
 
   function handleFlapsImageUpload() {
@@ -235,7 +237,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     topFlapText.style.display = "none";
     botFlapText.style.display = "none";
+    
+    // Reset positions
+    topFlapImg.style.setProperty("--obj-pos-y", "0px");
+    botFlapImg.style.setProperty("--obj-pos-y", "0px");
   }
+
+  // --- IMAGE DRAGGING ---
+  function initImageDragging(imgEl) {
+    let isDragging = false;
+    let startY = 0;
+    let startPos = 50;
+
+    const onStart = (e) => {
+      if (!imgEl.src || imgEl.src === window.location.href) return;
+      isDragging = true;
+      startY = e.clientY || (e.touches && e.touches[0].clientY);
+      const currentPos = getComputedStyle(imgEl).getPropertyValue("--obj-pos-y");
+      startPos = currentPos ? parseFloat(currentPos) : 0;
+      imgEl.style.cursor = "grabbing";
+      // Prevent default to stop browser image dragging
+      if (e.type === "mousedown") e.preventDefault();
+    };
+
+    const onMove = (e) => {
+      if (!isDragging) return;
+      const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+      const deltaY = currentY - startY;
+      // Pixel-based movement for transform: translateY
+      let newPos = startPos + deltaY;
+      imgEl.style.setProperty("--obj-pos-y", newPos + "px");
+    };
+
+    const onEnd = () => {
+      if (isDragging) {
+        isDragging = false;
+        imgEl.style.cursor = "ns-resize";
+      }
+    };
+
+    imgEl.addEventListener("mousedown", onStart);
+    imgEl.addEventListener("touchstart", onStart, { passive: false });
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchend", onEnd);
+  }
+
+  initImageDragging(bgFront);
+  initImageDragging(bgBack);
+  initImageDragging(topFlapImg);
+  initImageDragging(botFlapImg);
 
   function updateDieline() {
     let D = parseFloat(depthIn.value);
@@ -270,7 +322,13 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.keys(configs).forEach((name) => {
       const opt = document.createElement("option");
       opt.value = name;
-      opt.textContent = name;
+
+      const maxLength = 32;
+      opt.textContent = name.length > maxLength
+        ? name.substring(0, maxLength - 3) + "..."
+        : name;
+      opt.title = name;
+
       loadConfigSelect.appendChild(opt);
     });
   }
@@ -296,6 +354,9 @@ document.addEventListener("DOMContentLoaded", () => {
       solutionUrl: solutionIn.value,
       bgColor: bgColIn.value,
       showDieline: showDieline.checked,
+      posFront: bgFront.style.getPropertyValue("--obj-pos-y"),
+      posBack: bgBack.style.getPropertyValue("--obj-pos-y"),
+      posFlaps: topFlapImg.style.getPropertyValue("--obj-pos-y"),
     };
 
     saveConfigs(configs);
@@ -347,6 +408,13 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         printWrapper.classList.add("dieline-hidden");
       }
+    }
+
+    if (config.posFront) bgFront.style.setProperty("--obj-pos-y", config.posFront);
+    if (config.posBack) bgBack.style.setProperty("--obj-pos-y", config.posBack);
+    if (config.posFlaps) {
+      topFlapImg.style.setProperty("--obj-pos-y", config.posFlaps);
+      botFlapImg.style.setProperty("--obj-pos-y", config.posFlaps);
     }
 
     configNameIn.value = name;
@@ -458,7 +526,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const displayName = (descriptionsData[advId] && descriptionsData[advId].nameEn)
           ? descriptionsData[advId].nameEn
           : advId;
-        opt.textContent = displayName;
+
+        // Truncate long names to fit the sidebar width
+        const maxLength = 32;
+        opt.textContent = displayName.length > maxLength
+          ? displayName.substring(0, maxLength - 3) + "..."
+          : displayName;
+
+        // Add full name as title attribute
+        opt.title = displayName;
+
         opt.dataset.boxId = box.ID;
         group.appendChild(opt);
       });
@@ -523,6 +600,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       bgFront.src = frontUrl;
       bgBack.src = backUrl;
+
+      // Reset positions for new game
+      bgFront.style.setProperty("--obj-pos-y", "0px");
+      bgBack.style.setProperty("--obj-pos-y", "0px");
 
       // Update thumbnails
       fThumb.src = frontUrl;

@@ -138,6 +138,7 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
       <label>Image (Top/Bottom Flaps)</label>
       <input type="file" id="flaps-image" accept="image/*" />
       <img class="thumbnail" id="flaps-thumb" style="display: none" />
+      <small style="display:block; margin-top:5px; color:#aaa;">💡 Tip: Click and drag images on the preview to reposition them vertically.</small>
     </div>
 
     <div class="control-group">
@@ -215,7 +216,7 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
         </div>
 
         <div class="panel-graphics" id="panel-front">
-          <img class="bg-layer" id="bg-front" src="" alt="" />
+          <img class="bg-layer" id="bg-front" src="" alt="" draggable="false" />
           <div class="image-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -268,7 +269,7 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
         </div>
 
         <div class="panel-graphics" id="panel-back">
-          <img class="bg-layer" id="bg-back" src="" alt="" />
+          <img class="bg-layer" id="bg-back" src="" alt="" draggable="false" />
           <div class="image-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -318,7 +319,7 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
 
         <!-- TOP FLAPS ON BACK -->
         <div class="panel-graphics" id="top-roof">
-          <img class="flap-image top-flap-image" id="top-flap-img" src="" alt="" style="display: none" />
+          <img class="flap-image top-flap-image" id="top-flap-img" src="" alt="" style="display: none" draggable="false" />
           <div class="flap-text top-flap-text game-title-spine" id="top-flap-text">
             LE DONJON DE DOO-ARANN
           </div>
@@ -330,7 +331,7 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
 
         <!-- BOTTOM FLAPS ON BACK -->
         <div class="panel-graphics" id="bot-flap">
-          <img class="flap-image bot-flap-image" id="bot-flap-img" src="" alt="" style="display: none" />
+          <img class="flap-image bot-flap-image" id="bot-flap-img" src="" alt="" style="display: none" draggable="false" />
           <div class="flap-text bot-flap-text game-title-spine" id="bot-flap-text">
             LE DONJON DE DOO-ARANN
           </div>

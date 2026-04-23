@@ -17,6 +17,7 @@
   --hyp-15: calc(var(--depth-mm) / 0.9659);
   /* 1 / cos(15deg) */
 
+  --obj-pos-y: 0%;
   --bg-dark: #121212;
   --bg-panel: #1e1e1e;
   --c-primary: #00a0e0;
@@ -115,6 +116,10 @@ aside p.subtitle {
   font-family: inherit;
   width: 100%;
   max-width: 100%;
+}
+
+.control-group input[type="text"],
+.control-group select {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -155,7 +160,8 @@ aside p.subtitle {
   width: 100%;
 }
 
-.secondary-btn, .danger-btn {
+.secondary-btn,
+.danger-btn {
   background: #444;
   color: #fff;
   border: none;
@@ -224,13 +230,11 @@ p.tip {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: repeating-linear-gradient(
-    45deg,
-    #181818 0,
-    #181818 20px,
-    #1c1c1c 20px,
-    #1c1c1c 40px
-  );
+  background: repeating-linear-gradient(45deg,
+      #181818 0,
+      #181818 20px,
+      #1c1c1c 20px,
+      #1c1c1c 40px);
   overflow: auto;
   padding: 20px;
 }
@@ -282,12 +286,10 @@ p.tip {
   width: 100%;
   height: 100%;
   background: var(--box-bg);
-  clip-path: polygon(
-    0 var(--glue-shift-15),
-    100% 0,
-    100% 100%,
-    0 calc(100% - var(--glue-shift-15))
-  );
+  clip-path: polygon(0 var(--glue-shift-15),
+      100% 0,
+      100% 100%,
+      0 calc(100% - var(--glue-shift-15)));
 }
 
 #panel-front {
@@ -410,12 +412,10 @@ p.tip {
 }
 
 #top-dust-1 .dust-bg {
-  clip-path: polygon(
-    var(--shift-15) 0,
-    calc(100% - var(--shift-15)) 0,
-    100% 100%,
-    0 100%
-  );
+  clip-path: polygon(var(--shift-15) 0,
+      calc(100% - var(--shift-15)) 0,
+      100% 100%,
+      0 100%);
 }
 
 #bot-dust-1 {
@@ -424,12 +424,10 @@ p.tip {
 }
 
 #bot-dust-1 .dust-bg {
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    calc(100% - var(--shift-15)) 100%,
-    var(--shift-15) 100%
-  );
+  clip-path: polygon(0 0,
+      100% 0,
+      calc(100% - var(--shift-15)) 100%,
+      var(--shift-15) 100%);
 }
 
 #top-dust-2 {
@@ -438,12 +436,10 @@ p.tip {
 }
 
 #top-dust-2 .dust-bg {
-  clip-path: polygon(
-    var(--shift-15) 0,
-    calc(100% - var(--shift-15)) 0,
-    100% 100%,
-    0 100%
-  );
+  clip-path: polygon(var(--shift-15) 0,
+      calc(100% - var(--shift-15)) 0,
+      100% 100%,
+      0 100%);
 }
 
 #bot-dust-2 {
@@ -452,12 +448,10 @@ p.tip {
 }
 
 #bot-dust-2 .dust-bg {
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    calc(100% - var(--shift-15)) 100%,
-    var(--shift-15) 100%
-  );
+  clip-path: polygon(0 0,
+      100% 0,
+      calc(100% - var(--shift-15)) 100%,
+      var(--shift-15) 100%);
 }
 
 /* =============== CSS DIELINE =============== */
@@ -727,6 +721,8 @@ p.tip {
   object-fit: cover;
   z-index: 1;
   background: var(--box-bg);
+  cursor: ns-resize;
+  transform: scale(1.1) translateY(var(--obj-pos-y, 0));
 }
 
 .bg-layer[src=""] {
@@ -762,7 +758,7 @@ p.tip {
 
 #panel-front .bg-layer,
 #panel-front .image-placeholder {
-  top: 40mm;
+  top: 0;
   height: 100%;
 }
 
@@ -1044,16 +1040,17 @@ p.tip {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  z-index: 2;
+  object-fit: cover;
+  z-index: 0;
+  cursor: ns-resize;
 }
 
 .top-flap-image {
-  transform: rotate(180deg);
+  transform: rotate(180deg) scale(1.1) translateY(var(--obj-pos-y, 0));
 }
 
 .bot-flap-image {
-  transform: rotate(0deg);
+  transform: rotate(0deg) scale(1.1) translateY(var(--obj-pos-y, 0));
 }
 
 .flap-text {
@@ -1182,7 +1179,7 @@ p.tip {
   /* Removes any inline text gaps */
 }
 
-.spine-locks span + span {
+.spine-locks span+span {
   margin-top: -1.8mm;
   /* Reduced space between locks */
 }
@@ -1308,8 +1305,18 @@ p.tip {
 
   /* Let the browser handle paper size/orientation */
   @page {
-    margin: 5mm;
+    size: A4 portrait;
+    margin: 0;
   }
+}
 
-  /* Keep dieline hiding working in print styling via HTML wrappers css above */
+/* Disable pointer events for preview overlays to allow image dragging beneath them */
+.unlock-header,
+.game-name-banner,
+.front-bottom-text,
+.back-scenario-desc,
+.back-bot-content,
+.flap-text,
+.image-placeholder {
+  pointer-events: none;
 }

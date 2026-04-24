@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const CDN_URL = "https://raw.githubusercontent.com/gamepage-web/unssets/main/";
   let gamesData = null;
   let descriptionsData = null;
+  let logosData = null;
 
   // Inputs
   const titleIn = document.getElementById("game-title");
@@ -21,6 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const fThumb = document.getElementById("front-thumb");
   const bThumb = document.getElementById("back-thumb");
   const flapsThumb = document.getElementById("flaps-thumb");
+  const fThumbCont = document.getElementById("front-thumb-container");
+  const bThumbCont = document.getElementById("back-thumb-container");
+  const flapsThumbCont = document.getElementById("flaps-thumb-container");
   const printBtn = document.getElementById("print-btn");
   const showDieline = document.getElementById("show-dieline");
   const bgColIn = document.getElementById("box-bg-color");
@@ -204,13 +208,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function handleImageUpload(inputEl, imgOut, thumbOut) {
+  function handleImageUpload(inputEl, imgOut, thumbOut, containerOut) {
     const file = inputEl.files[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
     imgOut.src = url;
     thumbOut.src = url;
-    thumbOut.style.display = "block";
+    if (containerOut) containerOut.style.display = "block";
+    else thumbOut.style.display = "block";
     // Reset position
     imgOut.style.setProperty("--obj-pos-y", "0px");
   }
@@ -222,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
       botFlapImg.style.display = "none";
       topFlapImg.src = "";
       botFlapImg.src = "";
-      flapsThumb.style.display = "none";
+      flapsThumbCont.style.display = "none";
       topFlapText.style.display = "block";
       botFlapText.style.display = "block";
       return;
@@ -233,14 +238,12 @@ document.addEventListener("DOMContentLoaded", () => {
     topFlapImg.style.display = "block";
     botFlapImg.style.display = "block";
     flapsThumb.src = url;
-    flapsThumb.style.display = "block";
+    flapsThumbCont.style.display = "block";
 
     topFlapText.style.display = "none";
     botFlapText.style.display = "none";
     
     // Reset positions
-    topFlapImg.style.setProperty("--obj-pos-y", "0px");
-    botFlapImg.style.setProperty("--obj-pos-y", "0px");
   }
 
   // --- IMAGE DRAGGING ---
@@ -286,8 +289,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   initImageDragging(bgFront);
   initImageDragging(bgBack);
-  initImageDragging(topFlapImg);
-  initImageDragging(botFlapImg);
 
   function updateDieline() {
     let D = parseFloat(depthIn.value);
@@ -462,12 +463,39 @@ document.addEventListener("DOMContentLoaded", () => {
   diffIn.addEventListener("change", updateLocks);
   depthIn.addEventListener("input", updateDieline);
   fImageIn.addEventListener("change", () =>
-    handleImageUpload(fImageIn, bgFront, fThumb),
+    handleImageUpload(fImageIn, bgFront, fThumb, fThumbCont),
   );
   bImageIn.addEventListener("change", () =>
-    handleImageUpload(bImageIn, bgBack, bThumb),
+    handleImageUpload(bImageIn, bgBack, bThumb, bThumbCont),
   );
   flapsImageIn.addEventListener("change", handleFlapsImageUpload);
+
+  document.querySelectorAll(".remove-img").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const target = e.target.dataset.target;
+      if (target === "front") {
+        bgFront.src = "";
+        fThumb.src = "";
+        fThumbCont.style.display = "none";
+        fImageIn.value = "";
+      } else if (target === "back") {
+        bgBack.src = "";
+        bThumb.src = "";
+        bThumbCont.style.display = "none";
+        bImageIn.value = "";
+      } else if (target === "flaps") {
+        topFlapImg.src = "";
+        botFlapImg.src = "";
+        topFlapImg.style.display = "none";
+        botFlapImg.style.display = "none";
+        flapsThumb.src = "";
+        flapsThumbCont.style.display = "none";
+        flapsImageIn.value = "";
+        topFlapText.style.display = "block";
+        botFlapText.style.display = "block";
+      }
+    });
+  });
 
   showDieline.addEventListener("change", (e) => {
     if (e.target.checked) {
@@ -495,12 +523,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- GAME DATA FETCHING ---
   async function initGameData() {
     try {
-      const [unlockRes, descRes] = await Promise.all([
+      const [unlockRes, descRes, logosRes] = await Promise.all([
         fetch(`${CDN_URL}GameData/Unlock.json`),
-        fetch(`${CDN_URL}GameData/descriptions.json`)
+        fetch(`${CDN_URL}GameData/descriptions.json`),
+        fetch(`${CDN_URL}GameData/logos.json`)
       ]);
       gamesData = await unlockRes.json();
       descriptionsData = await descRes.json();
+      logosData = await logosRes.json();
       populateGameSelector();
     } catch (e) {
       console.error("Failed to fetch game data:", e);
@@ -607,9 +637,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Update thumbnails
       fThumb.src = frontUrl;
-      fThumb.style.display = "block";
+      fThumbCont.style.display = "block";
       bThumb.src = backUrl;
-      bThumb.style.display = "block";
+      bThumbCont.style.display = "block";
+
+      // Update Flaps if logo exists
+      if (logosData && logosData[gameId]) {
+        const logoUrl = `${CDN_URL}images/logos/${logosData[gameId]}`;
+        topFlapImg.src = logoUrl;
+        botFlapImg.src = logoUrl;
+        topFlapImg.style.display = "block";
+        botFlapImg.style.display = "block";
+        flapsThumb.src = logoUrl;
+        flapsThumbCont.style.display = "block";
+
+        topFlapText.style.display = "none";
+        botFlapText.style.display = "none";
+      } else {
+        topFlapImg.style.display = "none";
+        botFlapImg.style.display = "none";
+        topFlapImg.src = "";
+        botFlapImg.src = "";
+        flapsThumbCont.style.display = "none";
+        topFlapText.style.display = "block";
+        botFlapText.style.display = "block";
+      }
 
       // Trigger updates
       updateTitle();

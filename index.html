@@ -125,19 +125,28 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
     <div class="control-group">
       <label>Image (Front Panel)</label>
       <input type="file" id="front-image" accept="image/*" />
-      <img class="thumbnail" id="front-thumb" style="display: none" />
+      <div class="thumb-container" id="front-thumb-container" style="display: none">
+        <img class="thumbnail" id="front-thumb" />
+        <button class="remove-img" data-target="front" title="Remove image">✖</button>
+      </div>
     </div>
 
     <div class="control-group">
       <label>Image (Back Panel)</label>
       <input type="file" id="back-image" accept="image/*" />
-      <img class="thumbnail" id="back-thumb" style="display: none" />
+      <div class="thumb-container" id="back-thumb-container" style="display: none">
+        <img class="thumbnail" id="back-thumb" />
+        <button class="remove-img" data-target="back" title="Remove image">✖</button>
+      </div>
     </div>
 
     <div class="control-group">
       <label>Image (Top/Bottom Flaps)</label>
       <input type="file" id="flaps-image" accept="image/*" />
-      <img class="thumbnail" id="flaps-thumb" style="display: none" />
+      <div class="thumb-container" id="flaps-thumb-container" style="display: none">
+        <img class="thumbnail" id="flaps-thumb" />
+        <button class="remove-img" data-target="flaps" title="Remove image">✖</button>
+      </div>
       <small style="display:block; margin-top:5px; color:#aaa;">💡 Tip: Click and drag images on the preview to reposition them vertically.</small>
     </div>
 

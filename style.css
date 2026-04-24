@@ -17,7 +17,9 @@
   --hyp-15: calc(var(--depth-mm) / 0.9659);
   /* 1 / cos(15deg) */
 
-  --obj-pos-y: 0%;
+  --obj-pos-x: 0px;
+  --obj-pos-y: 0px;
+  --obj-scale: 1.1;
   --bg-dark: #121212;
   --bg-panel: #1e1e1e;
   --c-primary: #00a0e0;
@@ -248,7 +250,7 @@ p.tip {
   line-height: 1;
   transition: all 0.2s;
   z-index: 5;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
   padding: 0;
 }
 
@@ -751,11 +753,11 @@ p.tip {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   z-index: 1;
   background: var(--box-bg);
-  cursor: ns-resize;
-  transform: scale(1.1) translateY(var(--obj-pos-y, 0));
+  cursor: move;
+  transform: scale(var(--obj-scale, 1.1)) translate(var(--obj-pos-x, 0px), var(--obj-pos-y, 0px));
 }
 
 .bg-layer[src=""] {
@@ -1066,7 +1068,6 @@ p.tip {
   word-break: break-all;
 }
 
-/* FLAP STYLES */
 .flap-image {
   position: absolute;
   top: 50%;
@@ -1075,7 +1076,6 @@ p.tip {
   height: 90%;
   object-fit: contain;
   z-index: 0;
-  transform: translate(-50%, -50%);
 }
 
 .top-flap-image {

@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const printBtn = document.getElementById("print-btn");
   const showDieline = document.getElementById("show-dieline");
   const bgColIn = document.getElementById("box-bg-color");
+  const fScaleIn = document.getElementById("front-scale");
+  const bScaleIn = document.getElementById("back-scale");
 
   // Config
   const configNameIn = document.getElementById("config-name");
@@ -208,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function handleImageUpload(inputEl, imgOut, thumbOut, containerOut) {
+  function handleImageUpload(inputEl, imgOut, thumbOut, containerOut, scaleIn) {
     const file = inputEl.files[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
@@ -216,8 +218,11 @@ document.addEventListener("DOMContentLoaded", () => {
     thumbOut.src = url;
     if (containerOut) containerOut.style.display = "block";
     else thumbOut.style.display = "block";
-    // Reset position
+    // Reset position & scale
+    imgOut.style.setProperty("--obj-pos-x", "0px");
     imgOut.style.setProperty("--obj-pos-y", "0px");
+    imgOut.style.setProperty("--obj-scale", "1.1");
+    if (scaleIn) scaleIn.value = "1.1";
   }
 
   function handleFlapsImageUpload() {
@@ -242,40 +247,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
     topFlapText.style.display = "none";
     botFlapText.style.display = "none";
-    
-    // Reset positions
   }
 
   // --- IMAGE DRAGGING ---
   function initImageDragging(imgEl) {
     let isDragging = false;
+    let startX = 0;
     let startY = 0;
-    let startPos = 50;
+    let startPosX = 0;
+    let startPosY = 0;
 
     const onStart = (e) => {
       if (!imgEl.src || imgEl.src === window.location.href) return;
       isDragging = true;
+      startX = e.clientX || (e.touches && e.touches[0].clientX);
       startY = e.clientY || (e.touches && e.touches[0].clientY);
-      const currentPos = getComputedStyle(imgEl).getPropertyValue("--obj-pos-y");
-      startPos = currentPos ? parseFloat(currentPos) : 0;
+      
+      const currentPosX = getComputedStyle(imgEl).getPropertyValue("--obj-pos-x");
+      const currentPosY = getComputedStyle(imgEl).getPropertyValue("--obj-pos-y");
+      
+      startPosX = currentPosX ? parseFloat(currentPosX) : 0;
+      startPosY = currentPosY ? parseFloat(currentPosY) : 0;
+      
       imgEl.style.cursor = "grabbing";
-      // Prevent default to stop browser image dragging
       if (e.type === "mousedown") e.preventDefault();
     };
 
     const onMove = (e) => {
       if (!isDragging) return;
+      const currentX = e.clientX || (e.touches && e.touches[0].clientX);
       const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+      
+      const deltaX = currentX - startX;
       const deltaY = currentY - startY;
-      // Pixel-based movement for transform: translateY
-      let newPos = startPos + deltaY;
-      imgEl.style.setProperty("--obj-pos-y", newPos + "px");
+      
+      imgEl.style.setProperty("--obj-pos-x", (startPosX + deltaX) + "px");
+      imgEl.style.setProperty("--obj-pos-y", (startPosY + deltaY) + "px");
     };
 
     const onEnd = () => {
       if (isDragging) {
         isDragging = false;
-        imgEl.style.cursor = "ns-resize";
+        imgEl.style.cursor = "move";
       }
     };
 
@@ -355,9 +368,12 @@ document.addEventListener("DOMContentLoaded", () => {
       solutionUrl: solutionIn.value,
       bgColor: bgColIn.value,
       showDieline: showDieline.checked,
-      posFront: bgFront.style.getPropertyValue("--obj-pos-y"),
-      posBack: bgBack.style.getPropertyValue("--obj-pos-y"),
-      posFlaps: topFlapImg.style.getPropertyValue("--obj-pos-y"),
+      posFrontX: bgFront.style.getPropertyValue("--obj-pos-x"),
+      posFrontY: bgFront.style.getPropertyValue("--obj-pos-y"),
+      scaleFront: bgFront.style.getPropertyValue("--obj-scale"),
+      posBackX: bgBack.style.getPropertyValue("--obj-pos-x"),
+      posBackY: bgBack.style.getPropertyValue("--obj-pos-y"),
+      scaleBack: bgBack.style.getPropertyValue("--obj-scale"),
     };
 
     saveConfigs(configs);
@@ -411,11 +427,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    if (config.posFront) bgFront.style.setProperty("--obj-pos-y", config.posFront);
-    if (config.posBack) bgBack.style.setProperty("--obj-pos-y", config.posBack);
-    if (config.posFlaps) {
-      topFlapImg.style.setProperty("--obj-pos-y", config.posFlaps);
-      botFlapImg.style.setProperty("--obj-pos-y", config.posFlaps);
+    if (config.posFrontX) bgFront.style.setProperty("--obj-pos-x", config.posFrontX);
+    if (config.posFrontY) bgFront.style.setProperty("--obj-pos-y", config.posFrontY);
+    if (config.scaleFront) {
+      bgFront.style.setProperty("--obj-scale", config.scaleFront);
+      fScaleIn.value = config.scaleFront;
+    }
+    
+    if (config.posBackX) bgBack.style.setProperty("--obj-pos-x", config.posBackX);
+    if (config.posBackY) bgBack.style.setProperty("--obj-pos-y", config.posBackY);
+    if (config.scaleBack) {
+      bgBack.style.setProperty("--obj-scale", config.scaleBack);
+      bScaleIn.value = config.scaleBack;
     }
 
     configNameIn.value = name;
@@ -462,11 +485,19 @@ document.addEventListener("DOMContentLoaded", () => {
   solutionIn.addEventListener("input", updateQRCode);
   diffIn.addEventListener("change", updateLocks);
   depthIn.addEventListener("input", updateDieline);
+
+  fScaleIn.addEventListener("input", (e) => {
+    bgFront.style.setProperty("--obj-scale", e.target.value);
+  });
+  bScaleIn.addEventListener("input", (e) => {
+    bgBack.style.setProperty("--obj-scale", e.target.value);
+  });
+
   fImageIn.addEventListener("change", () =>
-    handleImageUpload(fImageIn, bgFront, fThumb, fThumbCont),
+    handleImageUpload(fImageIn, bgFront, fThumb, fThumbCont, fScaleIn),
   );
   bImageIn.addEventListener("change", () =>
-    handleImageUpload(bImageIn, bgBack, bThumb, bThumbCont),
+    handleImageUpload(bImageIn, bgBack, bThumb, bThumbCont, bScaleIn),
   );
   flapsImageIn.addEventListener("change", handleFlapsImageUpload);
 
@@ -631,9 +662,15 @@ document.addEventListener("DOMContentLoaded", () => {
       bgFront.src = frontUrl;
       bgBack.src = backUrl;
 
-      // Reset positions for new game
+      // Reset positions & scale for new game
+      bgFront.style.setProperty("--obj-pos-x", "0px");
       bgFront.style.setProperty("--obj-pos-y", "0px");
+      bgFront.style.setProperty("--obj-scale", "1.1");
+      bgBack.style.setProperty("--obj-pos-x", "0px");
       bgBack.style.setProperty("--obj-pos-y", "0px");
+      bgBack.style.setProperty("--obj-scale", "1.1");
+      fScaleIn.value = "1.1";
+      bScaleIn.value = "1.1";
 
       // Update thumbnails
       fThumb.src = frontUrl;

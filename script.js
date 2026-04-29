@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let gamesData = null;
   let descriptionsData = null;
   let logosData = null;
+  let boxesData = null;
 
   // Inputs
   const titleIn = document.getElementById("game-title");
@@ -40,6 +41,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const gameSelector = document.getElementById("game-selector");
   const langSelector = document.getElementById("lang-selector");
+
+  // Gallery
+  const galleryModal = document.getElementById("gallery-modal");
+  const galleryGrid = document.getElementById("gallery-grid");
+  const closeGalleryBtn = document.getElementById("close-gallery");
+  const openFrontGalleryBtn = document.getElementById("open-front-gallery");
+  const openBackGalleryBtn = document.getElementById("open-back-gallery");
+  let currentGalleryTarget = null;
+  let defaultFrontUrl = null;
+  let defaultBackUrl = null;
 
   // Outputs
   const titleOutList = document.querySelectorAll(
@@ -262,13 +273,13 @@ document.addEventListener("DOMContentLoaded", () => {
       isDragging = true;
       startX = e.clientX || (e.touches && e.touches[0].clientX);
       startY = e.clientY || (e.touches && e.touches[0].clientY);
-      
+
       const currentPosX = getComputedStyle(imgEl).getPropertyValue("--obj-pos-x");
       const currentPosY = getComputedStyle(imgEl).getPropertyValue("--obj-pos-y");
-      
+
       startPosX = currentPosX ? parseFloat(currentPosX) : 0;
       startPosY = currentPosY ? parseFloat(currentPosY) : 0;
-      
+
       imgEl.style.cursor = "grabbing";
       if (e.type === "mousedown") e.preventDefault();
     };
@@ -277,10 +288,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!isDragging) return;
       const currentX = e.clientX || (e.touches && e.touches[0].clientX);
       const currentY = e.clientY || (e.touches && e.touches[0].clientY);
-      
+
       const deltaX = currentX - startX;
       const deltaY = currentY - startY;
-      
+
       imgEl.style.setProperty("--obj-pos-x", (startPosX + deltaX) + "px");
       imgEl.style.setProperty("--obj-pos-y", (startPosY + deltaY) + "px");
     };
@@ -433,7 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bgFront.style.setProperty("--obj-scale", config.scaleFront);
       fScaleIn.value = config.scaleFront;
     }
-    
+
     if (config.posBackX) bgBack.style.setProperty("--obj-pos-x", config.posBackX);
     if (config.posBackY) bgBack.style.setProperty("--obj-pos-y", config.posBackY);
     if (config.scaleBack) {
@@ -540,6 +551,111 @@ document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.style.setProperty("--box-bg", e.target.value);
   });
 
+  // Gallery Events
+  openFrontGalleryBtn.addEventListener("click", () => openGallery("front"));
+  openBackGalleryBtn.addEventListener("click", () => openGallery("back"));
+  closeGalleryBtn.addEventListener("click", closeGallery);
+  window.addEventListener("click", (e) => {
+    if (e.target === galleryModal) closeGallery();
+  });
+
+  function openGallery(target) {
+    currentGalleryTarget = target;
+    galleryModal.classList.add("active");
+    document.getElementById("gallery-title").textContent =
+      target === "front" ? "Select Front Image" : "Select Back Image";
+    populateGallery();
+  }
+
+  function closeGallery() {
+    galleryModal.classList.remove("active");
+  }
+
+  function populateGallery() {
+    galleryGrid.innerHTML = "";
+    if (!gameSelector.value) return;
+
+    const selectedOpt = gameSelector.options[gameSelector.selectedIndex];
+    const boxId = selectedOpt.dataset.boxId;
+    const gameId = gameSelector.value;
+
+    const images = [];
+
+    // 1. Default Game Assets (Front and Back)
+    if (defaultFrontUrl) {
+      images.push({
+        url: defaultFrontUrl,
+        label: "Game Front"
+      });
+    }
+    if (defaultBackUrl) {
+      images.push({
+        url: defaultBackUrl,
+        label: "Game Back"
+      });
+    }
+
+    // 2. Box Templates (Filtered by boxId)
+    if (boxesData && boxesData[boxId]) {
+      const box = boxesData[boxId];
+      const boxBaseUrl = `${CDN_URL}images/boxes/`;
+      if (box.front) {
+        images.push({
+          url: `${boxBaseUrl}${box.front}`,
+          label: `${boxId} Template Front`
+        });
+      }
+      if (box.back) {
+        images.push({
+          url: `${boxBaseUrl}${box.back}`,
+          label: `${boxId} Template Back`
+        });
+      }
+      if (box.iso) {
+        images.push({
+          url: `${boxBaseUrl}${box.iso}`,
+          label: `${boxId} Template Isometric`
+        });
+      }
+    }
+
+    // Remove duplicates
+    const uniqueImages = [];
+    const seenUrls = new Set();
+    images.forEach(img => {
+      if (img.url && !seenUrls.has(img.url)) {
+        uniqueImages.push(img);
+        seenUrls.add(img.url);
+      }
+    });
+
+    uniqueImages.forEach(img => {
+      const item = document.createElement("div");
+      item.className = "gallery-item";
+      item.innerHTML = `
+        <img src="${img.url}" alt="${img.label}" loading="lazy">
+        <span class="label">${img.label}</span>
+      `;
+      item.onclick = () => selectGalleryImage(img.url);
+      galleryGrid.appendChild(item);
+    });
+  }
+
+  function selectGalleryImage(url) {
+    if (currentGalleryTarget === "front") {
+      bgFront.src = url;
+      fThumb.src = url;
+      fThumbCont.style.display = "block";
+      fImageIn.value = "";
+    } else {
+      bgBack.src = url;
+      bThumb.src = url;
+      bThumbCont.style.display = "block";
+      bImageIn.value = "";
+    }
+    closeGallery();
+  }
+
   printBtn.addEventListener("click", () => {
     const originalTitle = document.title;
     document.title = `Unlock! ${titleIn.value.trim()}. Box`;
@@ -554,14 +670,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- GAME DATA FETCHING ---
   async function initGameData() {
     try {
-      const [unlockRes, descRes, logosRes] = await Promise.all([
+      const [unlockRes, descRes, logosRes, boxesRes] = await Promise.all([
         fetch(`${CDN_URL}GameData/Unlock.json`),
         fetch(`${CDN_URL}GameData/descriptions.json`),
-        fetch(`${CDN_URL}GameData/logos.json`)
+        fetch(`${CDN_URL}GameData/logos.json`),
+        fetch(`${CDN_URL}GameData/boxes.json`)
       ]);
       gamesData = await unlockRes.json();
       descriptionsData = await descRes.json();
       logosData = await logosRes.json();
+      boxesData = await boxesRes.json();
       populateGameSelector();
     } catch (e) {
       console.error("Failed to fetch game data:", e);
@@ -605,9 +723,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  async function handleGameChange() {
+  async function handleGameChange(e) {
+    const isLangChange = e && e.target === langSelector;
     const gameId = gameSelector.value;
     const lang = langSelector.value;
+
+    // Enable/Disable gallery buttons
+    if (gameId) {
+      openFrontGalleryBtn.disabled = false;
+      openBackGalleryBtn.disabled = false;
+    } else {
+      openFrontGalleryBtn.disabled = true;
+      openBackGalleryBtn.disabled = true;
+    }
+
     if (!gameId) return;
 
     try {
@@ -655,28 +784,42 @@ document.addEventListener("DOMContentLoaded", () => {
       const box = gamesData.boxes.find(b => b.ID === boxId);
       seriesIn.value = (box.displayName || box.ID).toUpperCase();
 
-      // Update Images from CDN
-      const frontUrl = `${CDN_URL}images/icons/${gameId}.png`;
-      const backUrl = `${CDN_URL}Skins/${manifest.skinName || gameId}_fond.jpg`;
+      const newFrontUrl = `${CDN_URL}images/icons/${gameId}.png`;
+      const newBackUrl = `${CDN_URL}Skins/${manifest.skinName || gameId}_fond.jpg`;
 
-      bgFront.src = frontUrl;
-      bgBack.src = backUrl;
+      // Only update images if it's a new game OR if current images are the defaults
+      const shouldUpdateFront = !isLangChange || (bgFront.src === defaultFrontUrl || !bgFront.src || bgFront.src === window.location.href);
+      const shouldUpdateBack = !isLangChange || (bgBack.src === defaultBackUrl || !bgBack.src || bgBack.src === window.location.href);
 
-      // Reset positions & scale for new game
-      bgFront.style.setProperty("--obj-pos-x", "0px");
-      bgFront.style.setProperty("--obj-pos-y", "0px");
-      bgFront.style.setProperty("--obj-scale", "1.1");
-      bgBack.style.setProperty("--obj-pos-x", "0px");
-      bgBack.style.setProperty("--obj-pos-y", "0px");
-      bgBack.style.setProperty("--obj-scale", "1.1");
-      fScaleIn.value = "1.1";
-      bScaleIn.value = "1.1";
+      defaultFrontUrl = newFrontUrl;
+      defaultBackUrl = newBackUrl;
 
-      // Update thumbnails
-      fThumb.src = frontUrl;
-      fThumbCont.style.display = "block";
-      bThumb.src = backUrl;
-      bThumbCont.style.display = "block";
+      if (shouldUpdateFront) {
+        bgFront.src = defaultFrontUrl;
+        fThumb.src = defaultFrontUrl;
+        fThumbCont.style.display = "block";
+        
+        // Reset position & scale ONLY on game change
+        if (!isLangChange) {
+          bgFront.style.setProperty("--obj-pos-x", "0px");
+          bgFront.style.setProperty("--obj-pos-y", "0px");
+          bgFront.style.setProperty("--obj-scale", "1.1");
+          fScaleIn.value = "1.1";
+        }
+      }
+
+      if (shouldUpdateBack) {
+        bgBack.src = defaultBackUrl;
+        bThumb.src = defaultBackUrl;
+        bThumbCont.style.display = "block";
+
+        if (!isLangChange) {
+          bgBack.style.setProperty("--obj-pos-x", "0px");
+          bgBack.style.setProperty("--obj-pos-y", "0px");
+          bgBack.style.setProperty("--obj-scale", "1.1");
+          bScaleIn.value = "1.1";
+        }
+      }
 
       // Update Flaps if logo exists
       if (logosData && logosData[gameId]) {

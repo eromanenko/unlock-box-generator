@@ -26,6 +26,7 @@
   --c-green: #37c485;
   --c-text: #fff;
   --box-bg: #f5f5f5;
+  --fold-color: #cccccc;
   --spine-font: "Roboto Slab", serif;
   --spine-font-size: 4mm;
 }
@@ -230,6 +231,7 @@ p.tip {
   position: relative;
   width: 100%;
   margin-top: 10px;
+  display: none;
 }
 
 .remove-img {
@@ -287,17 +289,6 @@ p.tip {
   position: relative;
   width: calc(138.8mm + (var(--depth-mm) * 2));
   height: calc(var(--y-main) + var(--h-main) + var(--depth-mm) + var(--flap));
-}
-
-/* SVG Dieline */
-#dieline-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  pointer-events: none;
 }
 
 /* Panels */
@@ -493,7 +484,7 @@ p.tip {
 /* Cut = blue solid, Fold = red dashed */
 
 #print-wrapper:not(.dieline-hidden) #glue-flap {
-  border-right: 1px dashed #d32f2f;
+  border-right: 1px dashed var(--fold-color);
   border-left: none;
   border-top: none;
   border-bottom: none;
@@ -538,17 +529,17 @@ p.tip {
 #print-wrapper:not(.dieline-hidden) #panel-front {
   border-top: 1px solid #1a237e;
   border-bottom: 1px solid #1a237e;
-  border-right: 1px dashed #d32f2f;
+  border-right: 1px dashed var(--fold-color);
 }
 
 #print-wrapper:not(.dieline-hidden) #panel-spine1 {
-  border-right: 1px dashed #d32f2f;
+  border-right: 1px dashed var(--fold-color);
 }
 
 #print-wrapper:not(.dieline-hidden) #panel-back {
-  border-right: 1px dashed #d32f2f;
-  border-top: 1px dashed #d32f2f;
-  border-bottom: 1px dashed #d32f2f;
+  border-right: 1px dashed var(--fold-color);
+  border-top: 1px dashed var(--fold-color);
+  border-bottom: 1px dashed var(--fold-color);
 }
 
 #print-wrapper:not(.dieline-hidden) #panel-spine2 {
@@ -557,7 +548,7 @@ p.tip {
 
 /* Top Back Flaps */
 #print-wrapper:not(.dieline-hidden) #top-roof {
-  border-top: 1px dashed #d32f2f;
+  border-top: 1px dashed var(--fold-color);
   border-left: 1px solid #1a237e;
   border-right: 1px solid #1a237e;
 }
@@ -605,7 +596,7 @@ p.tip {
 
 /* Bottom Back Flaps */
 #print-wrapper:not(.dieline-hidden) #bot-flap {
-  border-bottom: 1px dashed #d32f2f;
+  border-bottom: 1px dashed var(--fold-color);
   border-left: 1px solid #1a237e;
   border-right: 1px solid #1a237e;
 }
@@ -654,7 +645,7 @@ p.tip {
 /* Dust Flaps Dieline */
 #print-wrapper:not(.dieline-hidden) #top-dust-1,
 #print-wrapper:not(.dieline-hidden) #top-dust-2 {
-  border-bottom: 1px dashed #d32f2f;
+  border-bottom: 1px dashed var(--fold-color);
   border-top: none;
   border-left: none;
   border-right: none;
@@ -701,7 +692,7 @@ p.tip {
 
 #print-wrapper:not(.dieline-hidden) #bot-dust-1,
 #print-wrapper:not(.dieline-hidden) #bot-dust-2 {
-  border-top: 1px dashed #d32f2f;
+  border-top: 1px dashed var(--fold-color);
   border-bottom: none;
   border-left: none;
   border-right: none;
@@ -1033,7 +1024,7 @@ p.tip {
   align-items: center;
   gap: 3mm;
   margin-top: auto;
-  background: #fff;
+  background: transparent;
   border: 1px solid #ccc;
   padding: 1.5mm;
   border-radius: 1.5mm;
@@ -1043,7 +1034,7 @@ p.tip {
 #qr-code {
   width: 18mm;
   height: 18mm;
-  background: #fff;
+  background: transparent;
   flex-shrink: 0;
 }
 
@@ -1076,6 +1067,7 @@ p.tip {
   height: 90%;
   object-fit: contain;
   z-index: 0;
+  display: none;
 }
 
 .top-flap-image {
@@ -1217,17 +1209,6 @@ p.tip {
   /* Reduced space between locks */
 }
 
-.spine-level {
-  color: #fff;
-  font-family:
-    "Anton", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
-    Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-size: 2.5mm;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  line-height: 1;
-}
-
 .spine-bottom-brand {
   position: absolute;
   bottom: 0;
@@ -1339,7 +1320,7 @@ p.tip {
   /* Let the browser handle paper size/orientation */
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 1cm 0 0 0;
   }
 }
 
@@ -1539,4 +1520,98 @@ p.tip {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 10px;
   }
-}
+}
+
+/* Helpers for previously inline styles */
+#app-version {
+  font-size: 14px;
+  color: #888;
+  font-family: "Roboto Condensed", sans-serif;
+  letter-spacing: normal;
+}
+
+#game-desc {
+  resize: vertical;
+}
+
+.scale-row {
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.scale-label {
+  font-size: 12px;
+  font-weight: normal;
+  margin: 0;
+}
+
+.scale-input {
+  flex: 1;
+  padding: 0;
+}
+
+.tip-small {
+  display: block;
+  margin-top: 5px;
+  color: #aaa;
+}
+
+.color-picker-input {
+  height: 35px;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+
+.config-input-flex {
+  flex: 1;
+  width: auto;
+}
+
+.mt-5 {
+  margin-top: 5px;
+}
+
+/* Floating Action Button (Print) */
+.fab-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.fab-print {
+  box-shadow: 0 4px 15px rgba(0, 160, 224, 0.4);
+  padding: 12px 25px;
+  font-size: 18px;
+  border-radius: 30px;
+  margin-top: 0;
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.fab-print:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 160, 224, 0.6);
+  background: #0080bc;
+}
+
+.fab-tip {
+  font-size: 12px;
+  color: #bbb;
+  background: var(--bg-panel);
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  opacity: 0.9;
+}
+
+

@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const printBtn = document.getElementById("print-btn");
   const showDieline = document.getElementById("show-dieline");
   const bgColIn = document.getElementById("box-bg-color");
+  const foldColIn = document.getElementById("fold-color");
   const fScaleIn = document.getElementById("front-scale");
   const bScaleIn = document.getElementById("back-scale");
 
@@ -212,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
         width: 128,
         height: 128,
         colorDark: "#000000",
-        colorLight: "#ffffff",
+        colorLight: "transparent",
         correctLevel: QRCode.CorrectLevel.L,
       });
     } else {
@@ -378,6 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
       depth: depthIn.value,
       solutionUrl: solutionIn.value,
       bgColor: bgColIn.value,
+      foldColor: foldColIn.value,
       showDieline: showDieline.checked,
       posFrontX: bgFront.style.getPropertyValue("--obj-pos-x"),
       posFrontY: bgFront.style.getPropertyValue("--obj-pos-y"),
@@ -428,6 +430,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (config.bgColor !== undefined) {
       bgColIn.value = config.bgColor;
       document.documentElement.style.setProperty("--box-bg", config.bgColor);
+    }
+    if (config.foldColor !== undefined) {
+      foldColIn.value = config.foldColor;
+      document.documentElement.style.setProperty("--fold-color", config.foldColor);
     }
     if (config.showDieline !== undefined) {
       showDieline.checked = config.showDieline;
@@ -550,6 +556,9 @@ document.addEventListener("DOMContentLoaded", () => {
   bgColIn.addEventListener("input", (e) => {
     document.documentElement.style.setProperty("--box-bg", e.target.value);
   });
+  foldColIn.addEventListener("input", (e) => {
+    document.documentElement.style.setProperty("--fold-color", e.target.value);
+  });
 
   // Gallery Events
   openFrontGalleryBtn.addEventListener("click", () => openGallery("front"));
@@ -658,7 +667,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   printBtn.addEventListener("click", () => {
     const originalTitle = document.title;
-    document.title = `Unlock! ${titleIn.value.trim()}. Box`;
+    const versionEl = document.getElementById("app-version");
+    const appVersion = versionEl ? ` ${versionEl.textContent}` : "";
+    document.title = `Unlock! ${titleIn.value.trim()}. Box${appVersion}`;
     window.print();
     document.title = originalTitle;
   });

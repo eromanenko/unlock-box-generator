@@ -30,7 +30,7 @@
 
 <body>
   <aside class="sidebar noprint">
-    <h1>UNLOCK! Box Generator</h1>
+    <h1>UNLOCK! Box Generator <span id="app-version">v1.1</span></h1>
     <p class="subtitle">Create your custom adventure box</p>
 
     <div class="control-row">
@@ -83,7 +83,7 @@
 
     <div class="control-group">
       <label for="game-desc">Description</label>
-      <textarea id="game-desc" rows="3" style="resize: vertical">
+      <textarea id="game-desc" rows="3">
 Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!</textarea>
     </div>
 
@@ -134,9 +134,9 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
           </svg>
         </button>
       </div>
-      <div class="control-row" style="align-items: center; gap: 10px; margin-top: 5px;">
-        <label style="font-size: 12px; font-weight: normal; margin: 0;">Scale</label>
-        <input type="range" id="front-scale" min="0.1" max="3" step="0.01" value="1.1" style="flex: 1; padding: 0;" />
+      <div class="control-row scale-row">
+        <label class="scale-label">Scale</label>
+        <input type="range" id="front-scale" class="scale-input" min="0.1" max="3" step="0.01" value="1.1" />
       </div>
       <div class="thumb-container" id="front-thumb-container" style="display: none">
         <img class="thumbnail" id="front-thumb" />
@@ -156,9 +156,9 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
           </svg>
         </button>
       </div>
-      <div class="control-row" style="align-items: center; gap: 10px; margin-top: 5px;">
-        <label style="font-size: 12px; font-weight: normal; margin: 0;">Scale</label>
-        <input type="range" id="back-scale" min="0.1" max="3" step="0.01" value="1.1" style="flex: 1; padding: 0;" />
+      <div class="control-row scale-row">
+        <label class="scale-label">Scale</label>
+        <input type="range" id="back-scale" class="scale-input" min="0.1" max="3" step="0.01" value="1.1" />
       </div>
       <div class="thumb-container" id="back-thumb-container" style="display: none">
         <img class="thumbnail" id="back-thumb" />
@@ -173,20 +173,18 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
         <img class="thumbnail" id="flaps-thumb" />
         <button class="remove-img" data-target="flaps" title="Remove image">✖</button>
       </div>
-      <small style="display:block; margin-top:5px; color:#aaa;">💡 Tip: Flap images always fit their area automatically.</small>
+      <small class="tip-small">💡 Tip: Flap images always fit their area automatically.</small>
     </div>
 
-    <div class="control-group">
-      <label for="box-bg-color">Box Background Color</label>
-      <input type="color" id="box-bg-color" value="#f5f5f5" style="
-            height: 35px;
-            width: 100%;
-            padding: 0;
-            cursor: pointer;
-            background: #333;
-            border: 1px solid #444;
-            border-radius: 4px;
-          " />
+    <div class="control-row">
+      <div class="control-group">
+        <label for="box-bg-color">Background Color</label>
+        <input type="color" id="box-bg-color" class="color-picker-input" value="#f5f5f5" />
+      </div>
+      <div class="control-group">
+        <label for="fold-color">Fold Lines Color</label>
+        <input type="color" id="fold-color" class="color-picker-input" value="#cccccc" />
+      </div>
     </div>
 
     <div class="control-group checkbox">
@@ -194,28 +192,17 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
       <label for="show-dieline">Show cut and fold lines (dieline)</label>
     </div>
 
-    <button id="print-btn" class="print-btn">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M6 9V2h12v7"></path>
-        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-        <path d="M6 14h12v8H6z"></path>
-      </svg>
-      Print / Save as PDF
-    </button>
-    <p class="tip">
-      💡 When clicked, select "Save as PDF" in the print dialog.
-    </p>
 
     <hr class="separator" />
 
     <div class="control-group">
       <label>Configurations (Text & Settings only)</label>
       <div class="control-row">
-        <input type="text" id="config-name" placeholder="Save as..." style="flex:1; width:auto;" />
+        <input type="text" id="config-name" class="config-input-flex" placeholder="Save as..." />
         <button id="save-config-btn" class="secondary-btn">Save</button>
       </div>
-      <div class="control-row" style="margin-top: 5px;">
-        <select id="load-config-select" style="flex:1; width:auto;">
+      <div class="control-row mt-5">
+        <select id="load-config-select" class="config-input-flex">
           <option value="">-- Load Config --</option>
         </select>
         <button id="load-config-btn" class="secondary-btn">Load</button>
@@ -225,6 +212,17 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
   </aside>
 
   <main class="preview-area">
+    <div class="fab-container noprint">
+      <button id="print-btn" class="print-btn fab-print">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9V2h12v7"></path>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <path d="M6 14h12v8H6z"></path>
+        </svg>
+        Print / Save as PDF
+      </button>
+      <div class="fab-tip">💡 Select "Save as PDF" in dialog</div>
+    </div>
     <div id="print-wrapper">
       <div id="box-container">
         <!-- HTML Dieline Dust Flaps -->

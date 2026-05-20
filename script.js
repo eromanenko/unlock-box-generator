@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const showDieline = document.getElementById("show-dieline");
   const bgColIn = document.getElementById("box-bg-color");
   const foldColIn = document.getElementById("fold-color");
+  const autoColorBtn = document.getElementById("auto-color-btn");
   const fScaleIn = document.getElementById("front-scale");
   const bScaleIn = document.getElementById("back-scale");
 
@@ -78,6 +79,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const botFlapText = document.getElementById("bot-flap-text");
   const printWrapper = document.getElementById("print-wrapper");
   const rootStyle = document.documentElement.style;
+
+  bgFront.crossOrigin = "anonymous";
+  bgBack.crossOrigin = "anonymous";
+  topFlapImg.crossOrigin = "anonymous";
+  botFlapImg.crossOrigin = "anonymous";
 
   let qrcodeInstance = null;
 
@@ -468,6 +474,10 @@ document.addEventListener("DOMContentLoaded", () => {
     updateQRCode();
     updateLocks();
     updateDieline();
+    if (config.spineFont !== undefined) {
+      loadGoogleFont(config.spineFont);
+    }
+    updateAutoColorButtonState();
   }
 
   function handleDeleteConfig() {
@@ -484,10 +494,205 @@ document.addEventListener("DOMContentLoaded", () => {
     configNameIn.value = "";
   }
 
+  // --- GOOGLE FONTS LOADER ---
+  function loadGoogleFont(fontString) {
+    if (!fontString) return;
+    let fontName = fontString.split(',')[0].trim();
+    fontName = fontName.replace(/['"]/g, ''); // strip quotes
+    
+    const systemFonts = ["arial", "helvetica", "georgia", "times new roman", "courier new", "impact", "comic sans ms", "trebuchet ms", "verdana", "sans-serif", "serif", "cursive", "monospace"];
+    if (systemFonts.includes(fontName.toLowerCase())) return;
+    
+    const fontLinkId = "gfont-" + fontName.toLowerCase().replace(/\s+/g, "-");
+    if (document.getElementById(fontLinkId)) return;
+    
+    const link = document.createElement("link");
+    link.id = fontLinkId;
+    link.rel = "stylesheet";
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:ital,wght@0,400;0,700;1,400;1,700&display=swap`;
+    document.head.appendChild(link);
+    
+    if (document.fonts) {
+      document.fonts.ready.then(adjustSeriesLetterSpacing);
+    }
+  }
+
+  // --- DRAG AND DROP UPLOADER ---
+  function setupDragAndDrop(dropZoneEl, inputEl) {
+    if (!dropZoneEl || !inputEl) return;
+    
+    dropZoneEl.addEventListener("dragenter", (e) => {
+      e.preventDefault();
+      dropZoneEl.classList.add("drag-hover");
+    });
+    
+    dropZoneEl.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZoneEl.classList.add("drag-hover");
+    });
+    
+    dropZoneEl.addEventListener("dragleave", () => {
+      dropZoneEl.classList.remove("drag-hover");
+    });
+    
+    dropZoneEl.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZoneEl.classList.remove("drag-hover");
+      
+      if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        if (file.type.startsWith("image/")) {
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          inputEl.files = dt.files;
+          inputEl.dispatchEvent(new Event("change"));
+        }
+      }
+    });
+  }
+
+  // --- COLOR CONVERSION & EXTRACTION HELPERS ---
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0; // achromatic
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return [h * 360, s * 100, l * 100];
+  }
+
+  function hslToHex(h, s, l) {
+    s /= 100;
+    l /= 100;
+    let c = (1 - Math.abs(2 * l - 1)) * s;
+    let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    let m = l - c / 2;
+    let r = 0, g = 0, b = 0;
+
+    if (0 <= h && h < 60) {
+      r = c; g = x; b = 0;
+    } else if (60 <= h && h < 120) {
+      r = x; g = c; b = 0;
+    } else if (120 <= h && h < 180) {
+      r = 0; g = c; b = x;
+    } else if (180 <= h && h < 240) {
+      r = 0; g = x; b = c;
+    } else if (240 <= h && h < 300) {
+      r = x; g = 0; b = c;
+    } else if (300 <= h && h < 360) {
+      r = c; g = 0; b = x;
+    }
+    
+    const rHex = Math.round((r + m) * 255).toString(16).padStart(2, '0');
+    const gHex = Math.round((g + m) * 255).toString(16).padStart(2, '0');
+    const bHex = Math.round((b + m) * 255).toString(16).padStart(2, '0');
+
+    return `#${rHex}${gHex}${bHex}`;
+  }
+
+  function updateAutoColorButtonState() {
+    if (!autoColorBtn) return;
+    const hasFront = bgFront.src && bgFront.src !== window.location.href && !bgFront.src.startsWith("data:");
+    const hasBack = bgBack.src && bgBack.src !== window.location.href && !bgBack.src.startsWith("data:");
+    autoColorBtn.disabled = !(hasFront || hasBack);
+  }
+
+  function extractHarmoniousColors(imgEl) {
+    if (!imgEl || !imgEl.src || imgEl.src === window.location.href || imgEl.src.startsWith("data:")) return;
+    
+    const tempImg = new Image();
+    tempImg.crossOrigin = "anonymous";
+    
+    // Add cache buster only to remote HTTP/HTTPS images to prevent browser using non-CORS cached items.
+    if (imgEl.src.startsWith("http://") || imgEl.src.startsWith("https://")) {
+      const separator = imgEl.src.includes("?") ? "&" : "?";
+      tempImg.src = imgEl.src + separator + "t=" + new Date().getTime();
+    } else {
+      tempImg.src = imgEl.src;
+    }
+    
+    tempImg.onerror = (err) => {
+      console.error("Failed to load image for color extraction with CORS:", imgEl.src, err);
+    };
+    
+    tempImg.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 32;
+        canvas.height = 32;
+        ctx.drawImage(tempImg, 0, 0, 32, 32);
+        
+        const imgData = ctx.getImageData(0, 0, 32, 32).data;
+        let rSum = 0, gSum = 0, bSum = 0, count = 0;
+        
+        for (let i = 0; i < imgData.length; i += 4) {
+          const r = imgData[i];
+          const g = imgData[i+1];
+          const b = imgData[i+2];
+          const a = imgData[i+3];
+          
+          if (a > 128) {
+            rSum += r;
+            gSum += g;
+            bSum += b;
+            count++;
+          }
+        }
+        
+        if (count === 0) return;
+        
+        const avgR = Math.round(rSum / count);
+        const avgG = Math.round(gSum / count);
+        const avgB = Math.round(bSum / count);
+        
+        const [h, s, l] = rgbToHsl(avgR, avgG, avgB);
+        
+        // Harmonious Light Background (Hue = original, Saturation = 10-16%, Lightness = 96%)
+        const bgS = Math.max(10, Math.min(s, 16));
+        const bgL = 96;
+        const bgColorHex = hslToHex(h, bgS, bgL);
+        
+        // Harmonious Fold Lines Color (Hue = original, Saturation = 14-25%, Lightness = 80%)
+        const foldS = Math.max(14, Math.min(s + 8, 25));
+        const foldL = 80;
+        const foldColorHex = hslToHex(h, foldS, foldL);
+        
+        bgColIn.value = bgColorHex;
+        foldColIn.value = foldColorHex;
+        
+        document.documentElement.style.setProperty("--box-bg", bgColorHex);
+        document.documentElement.style.setProperty("--fold-color", foldColorHex);
+        
+        // Success micro-feedback
+        const origText = autoColorBtn.textContent;
+        autoColorBtn.textContent = "🪄✓";
+        setTimeout(() => {
+          autoColorBtn.textContent = origText;
+        }, 1000);
+        
+      } catch (err) {
+        console.error("Failed to analyze image colors:", err);
+      }
+    };
+  }
+
   // Bindings
   titleIn.addEventListener("input", updateTitle);
   spineFontIn.addEventListener("input", (e) => {
     document.documentElement.style.setProperty("--spine-font", e.target.value);
+    loadGoogleFont(e.target.value);
   });
   spineFontSizeIn.addEventListener("input", (e) => {
     document.documentElement.style.setProperty(
@@ -510,12 +715,14 @@ document.addEventListener("DOMContentLoaded", () => {
     bgBack.style.setProperty("--obj-scale", e.target.value);
   });
 
-  fImageIn.addEventListener("change", () =>
-    handleImageUpload(fImageIn, bgFront, fThumb, fThumbCont, fScaleIn),
-  );
-  bImageIn.addEventListener("change", () =>
-    handleImageUpload(bImageIn, bgBack, bThumb, bThumbCont, bScaleIn),
-  );
+  fImageIn.addEventListener("change", () => {
+    handleImageUpload(fImageIn, bgFront, fThumb, fThumbCont, fScaleIn);
+    updateAutoColorButtonState();
+  });
+  bImageIn.addEventListener("change", () => {
+    handleImageUpload(bImageIn, bgBack, bThumb, bThumbCont, bScaleIn);
+    updateAutoColorButtonState();
+  });
   flapsImageIn.addEventListener("change", handleFlapsImageUpload);
 
   document.querySelectorAll(".remove-img").forEach(btn => {
@@ -542,6 +749,7 @@ document.addEventListener("DOMContentLoaded", () => {
         topFlapText.style.display = "block";
         botFlapText.style.display = "block";
       }
+      updateAutoColorButtonState();
     });
   });
 
@@ -663,6 +871,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bImageIn.value = "";
     }
     closeGallery();
+    updateAutoColorButtonState();
   }
 
   printBtn.addEventListener("click", () => {
@@ -862,6 +1071,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateTime();
       updateDieline();
       updateQRCode();
+      updateAutoColorButtonState();
 
     } catch (e) {
       console.error("Error loading game data:", e);
@@ -882,6 +1092,25 @@ document.addEventListener("DOMContentLoaded", () => {
   updateLocks();
   updateDieline();
   updateConfigDropdown();
+
+  // Load initial Google Font if any
+  loadGoogleFont(spineFontIn.value);
+
+  // Setup Drag and Drop
+  setupDragAndDrop(document.getElementById("panel-front"), fImageIn);
+  setupDragAndDrop(document.getElementById("panel-back"), bImageIn);
+  setupDragAndDrop(document.getElementById("top-roof"), flapsImageIn);
+  setupDragAndDrop(document.getElementById("bot-flap"), flapsImageIn);
+
+  // Auto color extraction click handler
+  if (autoColorBtn) {
+    autoColorBtn.addEventListener("click", () => {
+      const hasFront = bgFront.src && bgFront.src !== window.location.href && !bgFront.src.startsWith("data:");
+      const targetImg = hasFront ? bgFront : bgBack;
+      extractHarmoniousColors(targetImg);
+    });
+  }
+  updateAutoColorButtonState();
 
   // Adjust letter spacing after custom fonts are loaded
   if (document.fonts) {

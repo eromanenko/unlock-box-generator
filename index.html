@@ -30,7 +30,7 @@
 
 <body>
   <aside class="sidebar noprint">
-    <h1>UNLOCK! Box Generator <span id="app-version">v1.1</span></h1>
+    <h1>UNLOCK! Box Generator <span id="app-version">v1.2</span></h1>
     <p class="subtitle">Create your custom adventure box</p>
 
     <div class="control-row">
@@ -179,7 +179,12 @@ Avoid the traps of the dungeon, fight the monsters, and leave with the treasure!
     <div class="control-row">
       <div class="control-group">
         <label for="box-bg-color">Background Color</label>
-        <input type="color" id="box-bg-color" class="color-picker-input" value="#f5f5f5" />
+        <div class="input-with-button">
+          <input type="color" id="box-bg-color" class="color-picker-input" value="#f5f5f5" />
+          <button id="auto-color-btn" class="gallery-btn" title="🪄 Автоматичний гармонійний колір з малюнка" disabled>
+            🪄
+          </button>
+        </div>
       </div>
       <div class="control-group">
         <label for="fold-color">Fold Lines Color</label>
